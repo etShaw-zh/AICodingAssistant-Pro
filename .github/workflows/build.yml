@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, macos-latest ]
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
 
     steps:
       - name: Check out
@@ -45,6 +45,13 @@ jobs:
           name: AICodingOfficer_mac_x86
           path: dist/*.app
 
+      - name: Upload (Linux)
+        if: ${{ runner.os == 'linux' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: AICodingOfficer_linux
+          path: dist/*
+
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -59,11 +66,13 @@ jobs:
         run: |
           cp -r AICodingOfficer_mac_x86/AICodingOfficer.app .
           cp AICodingOfficer_windows/AICodingOfficer.exe .
+          cp AICodingOfficer_linux/AICodingOfficer .
 
       - name: ZIP
         run: |
           zip -r AICodingOfficer_mac_x86.zip AICodingOfficer.app
           zip AICodingOfficer_windows.zip AICodingOfficer.exe
+          zip AICodingOfficer_linux.zip AICodingOfficer
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -75,7 +84,11 @@ jobs:
           files: |
             AICodingOfficer_windows.zip
             AICodingOfficer_mac_x86.zip
+            AICodingOfficer_linux.zip
           name: 🎉
           body: |
             ## 新增
-            - 搭建编码助手的基础框架
+            - 新增内容
+            
+            ## 优化
+            - 优化内容
