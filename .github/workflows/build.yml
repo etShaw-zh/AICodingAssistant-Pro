@@ -77,15 +77,15 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         env:
-          AUTO_RELEASE: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE }}
         with:
-          tag_name: tag
+          tag_name: v1.0.0
           draft: true
           files: |
             AICodingOfficer_windows.zip
             AICodingOfficer_mac_x86.zip
             AICodingOfficer_linux.zip
-          name: 🎉
+          name: 🎉AICO
           body: |
             ## 新增
             - 新增内容
