@@ -35,21 +35,21 @@ jobs:
         if: ${{ runner.os == 'windows' }}
         uses: actions/upload-artifact@v3
         with:
-          name: AICodingOfficer_windows
+          name: AICodingAssistant-Pro_windows
           path: dist/*.exe
 
       - name: Upload (macOS)
         if: ${{ runner.os == 'macos' }}
         uses: actions/upload-artifact@v3
         with:
-          name: AICodingOfficer_mac_x86
+          name: AICodingAssistant-Pro_mac_x86
           path: dist/*.app
 
       - name: Upload (Linux)
         if: ${{ runner.os == 'linux' }}
         uses: actions/upload-artifact@v3
         with:
-          name: AICodingOfficer_linux
+          name: AICodingAssistant-Pro_linux
           path: dist/*
 
   release:
@@ -64,15 +64,15 @@ jobs:
 
       - name: Move files
         run: |
-          cp -r AICodingOfficer_mac_x86/AICodingOfficer.app .
-          cp AICodingOfficer_windows/AICodingOfficer.exe .
-          cp AICodingOfficer_linux/AICodingOfficer .
+          cp -r AICodingAssistant-Pro_mac_x86/AICodingAssistant-Pro.app .
+          cp AICodingAssistant-Pro_windows/AICodingAssistant-Pro.exe .
+          cp AICodingAssistant-Pro_linux/AICodingAssistant-Pro .
 
       - name: ZIP
         run: |
-          zip -r AICodingOfficer_mac_x86.zip AICodingOfficer.app
-          zip AICodingOfficer_windows.zip AICodingOfficer.exe
-          zip AICodingOfficer_linux.zip AICodingOfficer
+          zip -r AICodingAssistant-Pro_mac_x86.zip AICodingAssistant-Pro.app
+          zip AICodingAssistant-Pro_windows.zip AICodingAssistant-Pro.exe
+          zip AICodingAssistant-Pro_linux.zip AICodingAssistant-Pro
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -82,9 +82,9 @@ jobs:
           tag_name: tag
           draft: true
           files: |
-            AICodingOfficer_windows.zip
-            AICodingOfficer_mac_x86.zip
-            AICodingOfficer_linux.zip
+            AICodingAssistant-Pro_windows.zip
+            AICodingAssistant-Pro_mac_x86.zip
+            AICodingAssistant-Pro_linux.zip
           name: 🎉
           body: |
             ## 新增
