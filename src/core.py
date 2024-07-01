@@ -15,16 +15,14 @@ from qfluentwidgets import (NavigationInterface, setThemeColor, PushButton, Tool
                             ProgressRing, ListWidget, NavigationAvatarWidget)
 from qfluentwidgets import FluentIcon as FIF
 from qfluentwidgets.common.style_sheet import styleSheetManager
-
 from qframelesswindow import FramelessWindow, StandardTitleBar
-
 
 from src.gui.mainwindow import MainWindow
 from src.gui.about import AboutWindow
 from src.gui.setting import SettingWindow
 from src.gui.dialog import NameEditBox
 
-from src.function import log, readCSV, initList, addTimes, openFolder
+from src.function import log, readCSV, initList, addTimes, openFolder, loadLanguage
 from src.module.coding import AICoding, getFinalName
 from src.module.config import configFile, codingFrameworkFolder, logFolder, readConfig, oldConfigCheck
 from src.module.version import newVersion, currentVersion
@@ -44,7 +42,7 @@ class Widget(QWidget):
 
 class NavigationBar(QWidget):
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        super().__init__(parent=parent)   
         self.hBoxLayout = QHBoxLayout(self)
         self.menuButton = NavigationToolButton(FIF.MENU, self)
         self.navigationPanel = NavigationPanel(parent, True)
@@ -100,6 +98,7 @@ class Window(FramelessWindow):
 
     def __init__(self):
         super().__init__()
+        self.icon_win_path = getResource("src/image/icon_win.png")
         self.setTitleBar(StandardTitleBar(self))
 
         self.hBoxLayout = QHBoxLayout(self)
@@ -133,7 +132,7 @@ class Window(FramelessWindow):
 
         self.navigationInterface.addWidget(
             routeKey='avatar',
-            widget=NavigationAvatarWidget('Shaw', 'src/image/icon_win.png'),
+            widget=NavigationAvatarWidget('作者', self.icon_win_path),
             onClick=self.showMessageBox,
             position=NavigationItemPosition.BOTTOM,
         )
@@ -158,7 +157,7 @@ class Window(FramelessWindow):
     def initWindow(self):
         self.resize(1280, 720)
         self.setWindowTitle(f"AI Coding Officer Pro {currentVersion()}")
-        self.setWindowIcon(QIcon(getResource("src/image/icon_win.png")))
+        self.setWindowIcon(QIcon(self.icon_win_path))
         setThemeColor("#2E75B6")
         
         # 加载 QSS
@@ -229,110 +228,6 @@ class Window(FramelessWindow):
 
         if w.exec():
             QDesktopServices.openUrl(QUrl("https://xiaojianjun.cn"))
-
-# class Window(FramelessWindow):
-
-#     def __init__(self):
-#         super().__init__()
-#         self.setTitleBar(StandardTitleBar(self))
-
-#         self.vBoxLayout = QVBoxLayout(self)
-#         # self.navigationInterface = NavigationBar(self)
-#         self.navigationInterface = NavigationInterface(self, showMenuButton=True, collapsible=True)
-#         self.stackWidget = QStackedWidget(self)
-
-#         # create sub interface
-#         self.myMainWindow = MyMainWindow()
-#         self.musicInterface = Widget('Music Interface', self)
-#         self.videoInterface = Widget('Video Interface', self)
-#         self.folderInterface = Widget('Folder Interface', self)
-#         self.settingInterface = Widget('Setting Interface', self)
-
-#         self.stackWidget.addWidget(self.myMainWindow)
-#         self.stackWidget.addWidget(self.musicInterface)
-#         self.stackWidget.addWidget(self.videoInterface)
-#         self.stackWidget.addWidget(self.folderInterface)
-#         self.stackWidget.addWidget(self.settingInterface)
-
-#         # initialize layout
-#         self.initLayout()
-
-#         # add items to navigation interface
-#         self.initNavigation()
-
-#         self.initWindow()
-    
-#     def initLayout(self):
-#         self.vBoxLayout.setSpacing(0)
-#         self.vBoxLayout.setContentsMargins(0, self.titleBar.height(), 0, 0)
-#         self.vBoxLayout.addWidget(self.navigationInterface)
-#         self.vBoxLayout.addWidget(self.stackWidget)
-#         self.vBoxLayout.setStretchFactor(self.stackWidget, 1)
-
-#     def initNavigation(self):
-#         self.navigationInterface.addItem('MyMainWindow', FIF.HOME, 'Home', lambda: self.switchTo(self.myMainWindow))
-#         self.addSubInterface(self.musicInterface, FIF.MUSIC, 'Music library')
-#         self.addSubInterface(self.videoInterface, FIF.VIDEO, 'Video library')
-
-#         self.navigationInterface.addSeparator()
-
-#         # add navigation items to scroll area
-#         self.addSubInterface(self.folderInterface, FIF.FOLDER, 'Folder library', NavigationItemPosition.SCROLL)
-
-#         self.navigationInterface.addWidget(
-#             routeKey='avatar',
-#             widget=NavigationAvatarWidget('Shaw', 'src/image/icon_win.png'),
-#             onClick=self.showMessageBox,
-#             position=NavigationItemPosition.BOTTOM,
-#         )
-#         # add item to bottom
-#         self.addSubInterface(self.settingInterface, FIF.SETTING, 'Settings', NavigationItemPosition.BOTTOM)
-
-#         self.stackWidget.currentChanged.connect(self.onCurrentInterfaceChanged)
-#         self.stackWidget.setCurrentIndex(1)
-
-#     def addSubInterface(self, interface, icon, text: str, position=NavigationItemPosition.TOP, parent=None):
-#         self.stackWidget.addWidget(interface)
-#         self.navigationInterface.addItem(
-#             routeKey=interface.objectName(),
-#             icon=icon,
-#             text=text,
-#             onClick=lambda: self.switchTo(interface),
-#             position=position,
-#             tooltip=text,
-#             parentRouteKey=parent.objectName() if parent else None
-#         )
-
-#     def initWindow(self):
-
-#         self.resize(1280, 720)
-#         self.setWindowTitle(f"AI Coding Officer Pro {currentVersion()}")
-#         self.setWindowIcon(QIcon(getResource("src/image/icon_win.png")))
-#         setThemeColor("#2E75B6")
-        
-#         # 加载 QSS
-#         with open(getResource("src/style/style_light.qss"), "r", encoding="UTF-8") as file:
-#             style_sheet = file.read()
-#         self.setStyleSheet(style_sheet)
-
-#         desktop = QApplication.screens()[0].availableGeometry()
-#         w, h = desktop.width(), desktop.height()
-#         self.move(w//2 - self.width()//2, h//2 - self.height()//2)
-
-#     def switchTo(self, widget):
-#         self.stackWidget.setCurrentWidget(widget)
-
-#     def onCurrentInterfaceChanged(self, index):
-#         widget = self.stackWidget.widget(index)
-#         self.navigationInterface.setCurrentItem(widget.objectName())
-
-#     def showMessageBox(self):
-#         w = MessageBox(
-#             'This is a help message',
-#             'You clicked a customized navigation widget. You can add more custom widgets by calling `NavigationInterface.addWidget()` 😉',
-#             self
-#         )
-#         w.exec()
 
 class MyMainWindow(QMainWindow, MainWindow):
     def __init__(self):
@@ -549,8 +444,8 @@ class MyAboutWindow(QDialog, AboutWindow):
         self.analysisTimes.setText(self.config.get("Counter", "analysis_times"))
 
     def checkPing(self):
-        thread1 = threading.Thread(target=self.checkPingThread, args=("aicodingassiatant.cn", self.anilistPing)) # TODO: 替换API
-        thread2 = threading.Thread(target=self.checkPingThread, args=("aicodingassiatant.cn", self.bangumiPing)) # TODO: 替换API
+        thread1 = threading.Thread(target=self.checkPingThread, args=("https://aicodingassistant.cn/", self.anilistPing)) # TODO: 替换API
+        thread2 = threading.Thread(target=self.checkPingThread, args=("https://aicodingassistant.cn/", self.bangumiPing)) # TODO: 替换API
         thread1.start()
         thread2.start()
 
@@ -586,10 +481,12 @@ class MySettingWindow(QDialog, SettingWindow):
     def loadConfig(self):
         self.modelType.setText(self.config.get("AICO", "model"))
         self.modelApiKey.setText(self.config.get("APIkey", "api_key"))
+        self.language.setText(self.config.get("Language", "language"))
 
     def saveConfig(self):
         self.config.set("AICO", "model", self.modelType.currentText())
         self.config.set("APIkey", "api_key", self.modelApiKey.text())
+        self.config.set("Language", "language", self.language.currentText())
 
         with open(configFile(), "w", encoding="utf-8") as content:
             self.config.write(content)

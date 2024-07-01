@@ -6,7 +6,10 @@ import logging
 import pandas as pd
 from datetime import datetime
 
+from PySide6.QtCore import QTranslator
+
 from src.module.config import configFile, readConfig, logFolder
+from src.module.resource import getResource
 
 
 def log(content):
@@ -112,3 +115,13 @@ def openFolder(path):
         subprocess.call(["open", path])
     elif platform.system() == "Linux":
         subprocess.call(["xdg-open", path])
+
+def loadLanguage(app, language):
+    translator = QTranslator(app)
+    _language_path = getResource(f"i18n/{language}.qm")
+    print(_language_path)
+    if translator.load(_language_path):
+        log(f"加载语言文件：{language}")
+        app.installTranslator(translator)
+    else:
+        log(f"加载语言文件失败：{language}")

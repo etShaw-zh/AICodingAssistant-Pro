@@ -55,8 +55,11 @@ def logFolder():
 def initConfig(config_file):
     config = configparser.ConfigParser()
 
+    config.add_section("Language")
+    config.set("Language", "language", "简体中文")
+
     config.add_section("Application")
-    config.set("Application", "version", "1.1")
+    config.set("Application", "version", "1.0.0")
 
     config.add_section("APIkey")
     config.set("APIkey", "api_key", "")
@@ -81,7 +84,7 @@ def oldConfigCheck():
     open_times = config.get("Counter", "open_times")
     analysis_times = config.get("Counter", "analysis_times")
 
-    if current_config_version != "1.1":
+    if current_config_version != "1.0.0":
         config_file = configFile()
         os.remove(config_file)
         initConfig(config_file)

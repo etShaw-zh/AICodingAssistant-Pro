@@ -19,6 +19,19 @@ class SettingWindow(object):
         this_window.resize(850, -1)
         this_window.setFixedSize(self.size())  # 禁止拉伸窗口
 
+        # 选择语言
+        self.languageTitle = QLabel("语言")
+
+        self.languageInfo = QLabel("选择你的首选语言，重启后生效。")
+        self.languageInfo.setObjectName("cardInfoLabel")
+
+        self.language = EditableComboBox(this_window)
+        self.language.setMinimumWidth(200)
+        self.language.setMaximumWidth(200)
+        self.language.addItems(["简体中文", "English"])
+        self.language.setText("简体中文")
+
+        self.languageCard = self.settingCard(self.languageTitle, self.languageInfo, self.language, "full")
 
         # 选择模型
 
@@ -101,6 +114,7 @@ class SettingWindow(object):
         layout = QVBoxLayout(this_window)
         layout.setSpacing(14)
         layout.setContentsMargins(24, 24, 24, 24)
+        layout.addWidget(self.languageCard)
         layout.addWidget(self.modelTypeCard)
         layout.addWidget(self.modelApiCard)
         layout.addWidget(self.posterFolderCard)

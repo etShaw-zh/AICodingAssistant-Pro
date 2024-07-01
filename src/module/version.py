@@ -3,13 +3,11 @@ import requests
 
 
 def currentVersion():
-    current_version = "1.0"
+    current_version = "1.0.0"
     return current_version
 
 
-def latestVersion(test=False):
-    if test == True:
-        return "1.1"
+def latestVersion():
     url = "https://raw.githubusercontent.com/etShaw-zh/AICodingAssistant-Pro/main/build.spec"
     response = requests.get(url)
     response_text = response.text.split('\n')
@@ -23,7 +21,7 @@ def latestVersion(test=False):
 
 def newVersion():
     current_version = currentVersion()
-    latest_version = latestVersion(test = True)
+    latest_version = latestVersion()
 
     if current_version != latest_version:
         return True
