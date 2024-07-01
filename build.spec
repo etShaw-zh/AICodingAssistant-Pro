@@ -8,7 +8,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('src/style', 'src/style'), ('src/font', 'src/font'), ('src/image', 'src/image'), ('lib', 'lib')],
+    datas=[('src/style', 'src/style'), ('src/font', 'src/font'), ('src/image', 'src/image')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -49,5 +49,5 @@ app = BUNDLE(
     name='AICodingAssistant.app',
     icon='image/icon.icns',
     bundle_identifier=None,
-    version='2.0.1'
+    version='1.0.0'
 )
