@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='AICodingAssistant',
+    name='AICodingOfficer',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -46,7 +46,7 @@ exe = EXE(
 )
 app = BUNDLE(
     exe,
-    name='AICodingAssistant.app',
+    name='AICodingOfficer.app',
     icon='image/icon.icns',
     bundle_identifier=None,
     version='1.0.0'
