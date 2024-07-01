@@ -1,0 +1,9 @@
+PySide6==6.4.2
+PySide6-Fluent-Widgets>=1.4.3
+requests
+arrow
+anitopy
+jieba
+fuzzywuzzy
+nltk
+pandas

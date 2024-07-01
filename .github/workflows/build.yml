@@ -1,0 +1,91 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Build App
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build
+        run: pyinstaller build.spec
+
+      - name: Upload (Windows)
+        if: ${{ runner.os == 'windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: AICodingOfficer_windows
+          path: dist/*.exe
+
+      - name: Upload (macOS)
+        if: ${{ runner.os == 'macos' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: AICodingOfficer_mac_x86
+          path: dist/*.app
+
+      - name: Upload (Linux)
+        if: ${{ runner.os == 'linux' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: AICodingOfficer_linux
+          path: dist/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v3
+
+      - name: Display files
+        run: ls -R
+
+      - name: Move files
+        run: |
+          cp -r AICodingOfficer_mac_x86/AICodingOfficer.app .
+          cp AICodingOfficer_windows/AICodingOfficer.exe .
+          cp AICodingOfficer_linux/AICodingOfficer .
+
+      - name: ZIP
+        run: |
+          zip -r AICodingOfficer_mac_x86.zip AICodingOfficer.app
+          zip AICodingOfficer_windows.zip AICodingOfficer.exe
+          zip AICodingOfficer_linux.zip AICodingOfficer
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: tag
+          draft: true
+          files: |
+            AICodingOfficer_windows.zip
+            AICodingOfficer_mac_x86.zip
+            AICodingOfficer_linux.zip
+          name: 🎉
+          body: |
+            ## 新增
+            - 搭建编码助手的基础框架
