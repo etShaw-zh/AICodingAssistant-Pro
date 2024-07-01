@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        os: [ windows-latest, macos-latest ]
 
     steps:
       - name: Check out
@@ -35,22 +35,15 @@ jobs:
         if: ${{ runner.os == 'windows' }}
         uses: actions/upload-artifact@v3
         with:
-          name: AICodingAssistant-Pro_windows
+          name: AICodingOfficer_windows
           path: dist/*.exe
 
       - name: Upload (macOS)
         if: ${{ runner.os == 'macos' }}
         uses: actions/upload-artifact@v3
         with:
-          name: AICodingAssistant-Pro_mac_x86
+          name: AICodingOfficer_mac_x86
           path: dist/*.app
-
-      - name: Upload (Linux)
-        if: ${{ runner.os == 'linux' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: AICodingAssistant-Pro_linux
-          path: dist/*
 
   release:
     needs: build
@@ -64,15 +57,13 @@ jobs:
 
       - name: Move files
         run: |
-          cp -r AICodingAssistant-Pro_mac_x86/AICodingAssistant-Pro.app .
-          cp AICodingAssistant-Pro_windows/AICodingAssistant-Pro.exe .
-          cp AICodingAssistant-Pro_linux/AICodingAssistant-Pro .
+          cp -r AICodingOfficer_mac_x86/AICodingOfficer.app .
+          cp AICodingOfficer_windows/AICodingOfficer.exe .
 
       - name: ZIP
         run: |
-          zip -r AICodingAssistant-Pro_mac_x86.zip AICodingAssistant-Pro.app
-          zip AICodingAssistant-Pro_windows.zip AICodingAssistant-Pro.exe
-          zip AICodingAssistant-Pro_linux.zip AICodingAssistant-Pro
+          zip -r AICodingOfficer_mac_x86.zip AICodingOfficer.app
+          zip AICodingOfficer_windows.zip AICodingOfficer.exe
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -82,9 +73,8 @@ jobs:
           tag_name: tag
           draft: true
           files: |
-            AICodingAssistant-Pro_windows.zip
-            AICodingAssistant-Pro_mac_x86.zip
-            AICodingAssistant-Pro_linux.zip
+            AICodingOfficer_windows.zip
+            AICodingOfficer_mac_x86.zip
           name: 🎉
           body: |
             ## 新增

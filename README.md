@@ -2,7 +2,7 @@
     <img src="image/AICO-logo.png" width=55%/ alt="">
     <br>
     <div align="center">
-        <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-2E75B6" alt="Platform">
+        <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS-2E75B6" alt="Platform">
         <img src="https://img.shields.io/github/downloads/etShaw-zh/AICodingAssistant-Pro/total?color=2E75B6" alt="Downloads">
         <img src="https://img.shields.io/github/license/etShaw-zh/AICodingAssistant-Pro?color=2E75B6" alt="License">
         <img src="https://img.shields.io/github/commit-activity/m/etShaw-zh/AICodingAssistant-Pro?color=2E75B6" alt="Commit activity">
