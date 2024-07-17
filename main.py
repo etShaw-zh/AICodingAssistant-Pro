@@ -1,4 +1,5 @@
 import sys
+import time
 from PySide6.QtWidgets import QApplication, QMenu
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QLocale
@@ -16,20 +17,20 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
-    # 默认加载系统语言
-    configLanguage = readConfig().get("Language", "language")
-    if configLanguage == "简体中文":
-        systemLanguage = "zh_CN"
-    else:
-        systemLanguage = "en_US"
-    # systemLanguage = QLocale.system().name()
-    loadLanguage(app, systemLanguage)
+    # # 默认加载系统语言
+    # configLanguage = readConfig().get("Language", "language")
+    # if configLanguage == "简体中文":
+    #     systemLanguage = "zh_CN"
+    # else:
+    #     systemLanguage = "en_US"
+    # # systemLanguage = QLocale.system().name()
+    # loadLanguage(app, systemLanguage)
 
-    translator = FluentTranslator()
-    app.installTranslator(translator)
+    # translator = FluentTranslator()
+    # app.installTranslator(translator)
     
     # window = MyMainWindow()
     window = Window()
-
     window.show()
+
     app.exec()

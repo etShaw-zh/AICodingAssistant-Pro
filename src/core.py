@@ -5,6 +5,7 @@ import shutil
 import arrow
 import requests
 import pandas as pd
+import sqlite3
 
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem, QDialog, QListWidgetItem, QToolBar, QLabel, QWidget, QHBoxLayout, QApplication, QVBoxLayout, QStackedWidget, QMenu
 from PySide6.QtCore import Qt, QEvent, QUrl, Signal, QPoint
@@ -21,10 +22,11 @@ from src.gui.mainwindow import MainWindow
 from src.gui.about import AboutWindow
 from src.gui.setting import SettingWindow
 from src.gui.dialog import NameEditBox
+from src.gui.autocodingwindow import AutoCodingWindow
 
 from src.function import log, readCSV, initList, addTimes, openFolder, loadLanguage
-from src.module.coding import AICoding, getFinalName
-from src.module.config import configFile, codingFrameworkFolder, logFolder, readConfig, oldConfigCheck
+from src.module.coding import AICodingWorkerThread, fetch_data_from_database, worker
+from src.module.config import configFile, localDBFilePath, logFolder, readConfig, oldConfigCheck
 from src.module.version import newVersion, currentVersion
 from src.module.resource import getResource
 
@@ -106,6 +108,9 @@ class Window(FramelessWindow):
         self.stackWidget = QStackedWidget(self)
 
         # create sub interface
+        self.myAutoCodingWindow = MyAutoCodingWindow()
+        self.stackWidget.addWidget(self.myAutoCodingWindow)
+
         self.myMainWindow = MyMainWindow()
         self.stackWidget.addWidget(self.myMainWindow)
 
@@ -125,9 +130,12 @@ class Window(FramelessWindow):
         self.hBoxLayout.setStretchFactor(self.stackWidget, 1)
 
     def initNavigation(self):
-        self.navigationInterface.setExpandWidth(100)
+        self.navigationInterface.setExpandWidth(150)
 
-        self.navigationInterface.addItem('MyMainWindow', FIF.HOME, '主页', lambda: self.switchTo(self.myMainWindow))
+        self.navigationInterface.addItem('MyAutoCodingWindow', FIF.ROBOT, '自动编码', lambda: self.switchTo(self.myAutoCodingWindow))
+        
+        # TODO: 优化导航栏，添加手动编码功能
+        # self.navigationInterface.addItem('MyMainWindow', FIF.CODE, '手动', lambda: self.switchTo(self.myMainWindow))
         self.navigationInterface.addSeparator()
 
         self.navigationInterface.addWidget(
@@ -240,12 +248,7 @@ class MyMainWindow(QMainWindow, MainWindow):
         oldConfigCheck()
         addTimes("open_times")
         self.config = readConfig()
-        self.coding_framework_folder = codingFrameworkFolder()
-
-        self.worker = AICoding()
-        self.worker.main_state.connect(self.showState)
-        self.worker.coding_state.connect(self.editTableState)
-        self.worker.added_progress_count.connect(self.addProgressBar)
+        self.local_db_file_path = localDBFilePath()
 
     def initConnect(self):
         self.table.setContextMenuPolicy(Qt.CustomContextMenu)  # 自定义右键菜单
@@ -259,8 +262,7 @@ class MyMainWindow(QMainWindow, MainWindow):
         self.aboutButton.clicked.connect(self.openAbout)
         self.settingButton.clicked.connect(self.openSetting)
 
-        self.standardCodingButton.clicked.connect(self.standardCoding)
-        # self.singleCodingButton.clicked.connect(self.singleCoding)
+        self.singleCodingButton.clicked.connect(self.singleCoding)
     
     def initList(self, clean_all=True):
         if clean_all:
@@ -319,8 +321,6 @@ class MyMainWindow(QMainWindow, MainWindow):
         setting.exec()
 
     def closeSetting(self, title):
-        for anime in self.anime_list:
-            getFinalName(anime)
         self.selectTable()
         self.showInfo("success", title, "配置修改成功")
 
@@ -424,12 +424,208 @@ class MyMainWindow(QMainWindow, MainWindow):
                 duration=2000, parent=self
             )
 
-    # TODO: 补充编码函数
-    def standardCoding():
+    def singleCoding(self):
+        print("单个编码")
         pass
 
-    def singleCoding():
-        pass
+class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUI(self)
+        self.initConnect()
+        oldConfigCheck()
+        addTimes("open_times")
+        self.config = readConfig()
+
+        self.local_db_file_path = localDBFilePath()
+        self.topicFilePath = self.topicInfo.text()
+        self.replyFilePath = self.replyInfo.text()
+        self.codingSchemePath = self.schemaInfo.text()
+
+        self.doingCoding = False
+
+        # 数据
+        self.topics = pd.DataFrame()
+        self.replys = pd.DataFrame()
+        self.codingScheme = pd.DataFrame()
+
+        self.db_path = self.local_db_file_path
+        self.conn = sqlite3.connect(self.db_path)
+
+        self.texts = [
+            '随着科技的飞速发展，人工智能（AI）已经成为我们日常生活中不可或缺的一部分。...',
+            '最开始在使用Chatgpt的时候，如果你像用百度或者google一样提问，会发现它并不会给你带来特别惊艳的地方...',
+            'Chatgpt类型的Ai工具不是搜索引擎，而是生产工具，目前对教师的备课可以起到重要的作用。',
+            '@张建鑫：它不会替代你思考，可以帮助你思考的更多面向。'
+        ]
+
+        self.worker = AICodingWorkerThread(self.texts)
+        self.worker.output_signal.connect(self.updateLogContent)
+        self.worker.running_signal.connect(self.lisenToWorker)
+
+    def initConnect(self):
+        self.newVersionButton.clicked.connect(self.openRelease)
+        self.aboutButton.clicked.connect(self.openAbout)
+        self.settingButton.clicked.connect(self.openSetting)
+
+        self.loadDataButton.clicked.connect(self.loadData)
+        self.standardCodingButton.clicked.connect(self.standardCoding)
+        self.stopCodingButton.clicked.connect(self.stopCoding)
+
+    def loadData(self):
+        if self.doingCoding:
+            self.showInfo("warning", "警告", "编码正在进行中，请勿重复加载数据")
+            return
+        if self.topicFilePath == '':
+            self.showInfo("error", "错误", "请先选择话题文件")
+            return
+        if self.replyFilePath == '':
+            self.showInfo("error", "错误", "请先选择回复文件")
+            return
+        if self.codingSchemePath == '':
+            self.showInfo("error", "错误", "请先选择编码方案文件")
+            return
+        
+        self.topics = pd.read_csv(self.topicFilePath, encoding='utf-8', index_col=0)
+        self.replys = pd.read_csv(self.replyFilePath, encoding='utf-8', index_col=0)
+        self.codingScheme = pd.read_csv(self.codingSchemePath, encoding='utf-8')
+        self.prepare_prompt()
+        self.showInfo("success", "成功", "数据加载成功")
+        self.standardCodingButton.setEnabled(True)
+
+        self.topics.to_sql('topics', self.conn, if_exists='replace', index=True)
+        self.replys.to_sql('replys', self.conn, if_exists='replace', index=True)
+        self.codingScheme.to_sql('coding_scheme', self.conn, if_exists='replace')
+
+    def prepare_prompt(self):
+        # self.topic_df = pd.read_sql('select * from topics', self.conn, index_col=0)
+        # self.reply_df = pd.read_sql('select * from replys', self.conn, index_col=0)
+        # self.coding_scheme_df = pd.read_sql('select * from coding_scheme', self.conn)
+        self.topic_df = self.topics
+        self.reply_df = self.replys
+        self.coding_scheme_df = self.codingScheme
+        
+        code_keys = self.coding_scheme_df['code'].to_list()
+        code_temp_df = pd.DataFrame(0, index=self.reply_df.index.to_list(), columns=code_keys)
+        self.coding_result_df = pd.merge(self.reply_df, code_temp_df, left_index=True, right_index=True)
+
+        topic_reply_tree_dict = {}
+        has_process_reply_id_lst = []
+        check_reply_count = 0
+        for index, row in self.topic_df.iterrows():
+            topic_id = row['topic_id']
+            topic_desc = row['topic_title'] + row['topic_content']
+            topic_reply_tree_dict[topic_id] = {'topic_desc': topic_desc,'reply_tree': []}
+            for index, row in self.reply_df[self.reply_df['topic_id'] == topic_id].iterrows():
+                reply_id = row['reply_id']
+                if reply_id in has_process_reply_id_lst:
+                    continue
+                reply_desc = '- ' + row['user_name'] + '(reply_id:' + str(reply_id) + ')：' + row['reply_content']
+                topic_reply_tree_dict[topic_id]['reply_tree'].append({'reply_id': reply_id, 'reply_desc': reply_desc, 'reply_tree': []})
+                check_reply_count += 1
+                has_process_reply_id_lst.append(reply_id)
+                for index, row in self.reply_df[self.reply_df['to_reply_id'] == reply_id].iterrows():
+                    reply_id = row['reply_id']
+                    if reply_id in has_process_reply_id_lst:
+                        continue
+                    reply_desc = '- ' + row['user_name'] + '(reply_id:' + str(reply_id) + ')：' + row['reply_content']
+                    topic_reply_tree_dict[topic_id]['reply_tree'][-1]['reply_tree'].append({'reply_id': reply_id, 'reply_desc': reply_desc})
+                    check_reply_count += 1
+                    has_process_reply_id_lst.append(reply_id)
+
+        prompt_dict = {
+            'prompt_content': [],
+        }
+
+        for topic_id in topic_reply_tree_dict:
+            for reply_tree in topic_reply_tree_dict[topic_id]['reply_tree']:
+                prompt_content = r"""您将看到一组论坛中的话题和回帖，您的任务是优先根据下面的编码表中的含义解释对每个回帖提取一组标签“codes”（只有当编码表中没有合适的标签时才输出“NULL”），并以中文举例说明提取标签的理由，注意将理由翻译为中文列出。结果以JSON格式输出：{"reply_id":"1234","tags":["code-1","code-2",...,"code-n"],"reason":["原因和例子-1","原因和例子-2",...,"原因和例子-n"]}，注意只输出JSON，不要包括其他内容!
+                编码表：\n
+                """
+                prompt_content += r"""
+                {encode_table_latex}
+                \n\n话题：\n
+                """.format(encode_table_latex=self.coding_scheme_df.to_latex(index=False))
+                topic_desc = topic_reply_tree_dict[topic_id]['topic_desc']
+                prompt_content += topic_desc + '\n\n回帖：\n'
+                if len(reply_tree['reply_tree']) == 0:
+                    prompt_content += reply_tree['reply_desc'] + '\n\n'
+                else:
+                    prompt_content += reply_tree['reply_desc'] + '\n'
+                    for reply_tree_2 in reply_tree['reply_tree']:
+                        prompt_content += reply_tree_2['reply_desc'] + '\n'
+                    prompt_content += '\n'
+                prompt_dict['prompt_content'].append(prompt_content)
+
+        self.prompt_df = pd.DataFrame(prompt_dict)
+        self.prompt_df['prompt_code'] = 'None'
+        self.prompt_df['prompt_code_orign'] = 'None'
+        self.prompt_df.to_sql('prompt', self.conn, if_exists='replace', index=True)
+
+    def standardCoding(self):
+        if not self.doingCoding:
+            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "]  [开始编码]"
+            self.updateLogContent(t)
+            self.doingCoding = True
+            self.stopCodingButton.setEnabled(True)
+            self.standardCodingButton.setEnabled(False)
+            self.worker.start()
+        else:
+            self.showInfo("warning", "警告", "编码正在进行中，请勿重复点击")
+
+    def lisenToWorker(self, state):
+        self.doingCoding = state
+        self.stopCodingButton.setEnabled(state)
+        self.standardCodingButton.setEnabled(not state)
+        if not state:
+            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "]  [编码已停止]"
+            self.updateLogContent(t)
+
+    def stopCoding(self):
+        if self.doingCoding:
+            self.worker.stop()
+            self.lisenToWorker(False)
+
+    def updateLogContent(self, message):
+        self.logContent.append(message)
+        self.logContent.verticalScrollBar().setValue(self.logContent.verticalScrollBar().maximum())
+
+    def showProgressBar(self):
+        self.progress.setVisible(True)
+        self.progress.setMaximum(len(self.texts) * 3)
+
+    def openRelease(self):
+        url = QUrl("https://github.com/etShaw-zh/AICodingAssistant-Pro/releases/latest")
+        QDesktopServices.openUrl(url)
+
+    def openAbout(self):
+        about = MyAboutWindow()
+        about.exec()
+
+    def openSetting(self):
+        setting = MySettingWindow()
+        setting.save_notice.connect(self.closeSetting)
+        setting.exec()
+
+    def closeSetting(self, title):
+        self.showInfo("success", title, "配置修改成功")
+    
+    # 显示提示信息
+    def showInfo(self, state, title, content):
+        info_state = {
+            "info": InfoBar.info,
+            "success": InfoBar.success,
+            "warning": InfoBar.warning,
+            "error": InfoBar.error
+        }
+
+        if state in info_state:
+            info_state[state](
+                title=title, content=content,
+                orient=Qt.Horizontal, isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=2000, parent=self
+            )
 
 class MyAboutWindow(QDialog, AboutWindow):
     def __init__(self):
@@ -473,7 +669,7 @@ class MySettingWindow(QDialog, SettingWindow):
         self.loadConfig()
 
     def initConnect(self):
-        self.posterFolderButton.clicked.connect(self.openCodingFrameworkFolder)
+        self.localDBButton.clicked.connect(self.openLocalDBFilePath)
         self.logFolderButton.clicked.connect(self.openLogFolder)
         self.applyButton.clicked.connect(self.saveConfig)  # 保存配置
         self.cancelButton.clicked.connect(lambda: self.close())  # 关闭窗口
@@ -482,11 +678,13 @@ class MySettingWindow(QDialog, SettingWindow):
         self.modelType.setText(self.config.get("AICO", "model"))
         self.modelApiKey.setText(self.config.get("APIkey", "api_key"))
         self.language.setText(self.config.get("Language", "language"))
+        self.threadCount.setText(self.config.get("Thread", "thread_count"))
 
     def saveConfig(self):
         self.config.set("AICO", "model", self.modelType.currentText())
         self.config.set("APIkey", "api_key", self.modelApiKey.text())
         self.config.set("Language", "language", self.language.currentText())
+        self.config.set("Thread", "thread_count", self.threadCount.text())
 
         with open(configFile(), "w", encoding="utf-8") as content:
             self.config.write(content)
@@ -494,8 +692,8 @@ class MySettingWindow(QDialog, SettingWindow):
         self.save_notice.emit("配置已保存")
         self.close()
 
-    def openCodingFrameworkFolder(self):
-        openFolder(codingFrameworkFolder())
+    def openLocalDBFilePath(self):
+        openFolder(localDBFilePath())
 
     def openLogFolder(self):
         openFolder(logFolder())

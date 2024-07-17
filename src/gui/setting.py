@@ -4,7 +4,7 @@ from PySide6.QtGui import QIcon
 from qfluentwidgets import LineEdit, PushButton, FluentIcon, PrimaryPushButton, EditableComboBox
 
 from src.module.resource import getResource
-from src.module.config import codingFrameworkFolder, logFolder
+from src.module.config import localDBFilePath, logFolder
 
 
 class SettingWindow(object):
@@ -62,6 +62,20 @@ class SettingWindow(object):
 
         self.modelTypeCard = self.settingCard(self.modelTypeTitle, self.dateInfoFrame, self.modelType, "full")
 
+        # 选择线程数
+        self.threadTitle = QLabel("线程数")
+
+        self.threadInfo = QLabel("指定编码时的线程数，建议根据电脑性能选择。")
+        self.threadInfo.setObjectName("cardInfoLabel")
+
+        self.threadCount = EditableComboBox(this_window)
+        self.threadCount.setMinimumWidth(200)
+        self.threadCount.setMaximumWidth(200)
+        self.threadCount.addItems(["1", "2", "4", "8"])
+        self.threadCount.setText("4")
+
+        self.threadCard = self.settingCard(self.threadTitle, self.threadInfo, self.threadCount, "full")
+
         # 设置模型API key 
         
         self.modelApiTitle = QLabel("GPT API Key")
@@ -73,16 +87,16 @@ class SettingWindow(object):
 
         self.modelApiCard = self.settingCard(self.modelApiTitle, self.modelApiInfo, self.modelApiKey, "full")
 
-        # 编码框架文件夹
+        # 本地数据库文件夹
 
-        self.posterFolderTitle = QLabel("编码框架文件夹")
-        self.posterFolderInfo = QLabel(codingFrameworkFolder())
+        self.localDBTitle = QLabel("本地数据库")
+        self.localDBInfo = QLabel(localDBFilePath())
 
-        self.posterFolderButton = PushButton("打开", self, FluentIcon.FOLDER)
-        self.posterFolderButton.setFixedWidth(100)
+        self.localDBButton = PushButton("打开", self, FluentIcon.FOLDER)
+        self.localDBButton.setFixedWidth(100)
 
-        self.posterFolderCard = self.settingCard(
-            self.posterFolderTitle, self.posterFolderInfo, self.posterFolderButton, "full")
+        self.localDBCard = self.settingCard(
+            self.localDBTitle, self.localDBInfo, self.localDBButton, "full")
 
         # 日志
 
@@ -117,8 +131,9 @@ class SettingWindow(object):
         layout.addWidget(self.languageCard)
         layout.addWidget(self.modelTypeCard)
         layout.addWidget(self.modelApiCard)
-        layout.addWidget(self.posterFolderCard)
-        layout.addWidget(self.logFolderCard)
+        layout.addWidget(self.threadCard)
+        # layout.addWidget(self.localDBCard)
+        # layout.addWidget(self.logFolderCard)
         layout.addSpacing(12)
         layout.addLayout(self.buttonLayout)
 

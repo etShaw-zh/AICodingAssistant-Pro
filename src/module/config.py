@@ -37,11 +37,11 @@ def configFile():
     return config_file
 
 
-def codingFrameworkFolder():
-    coding_framework_folder = os.path.join(configPath(), "coding_framework")
-    newFolder(coding_framework_folder)
+def localDBFilePath():
+    local_db_file_path = os.path.join(configPath(), "coding_framework")
+    newFolder(local_db_file_path)
 
-    return coding_framework_folder
+    return local_db_file_path + "/aicoding.db"
 
 
 def logFolder():
@@ -50,6 +50,8 @@ def logFolder():
 
     return log_folder
 
+def getFilePath():
+    return os.path.join(configPath())
 
 # 初始化配置
 def initConfig(config_file):
@@ -59,13 +61,16 @@ def initConfig(config_file):
     config.set("Language", "language", "简体中文")
 
     config.add_section("Application")
-    config.set("Application", "version", "1.0.0")
+    config.set("Application", "version", "1.0.1")
 
     config.add_section("APIkey")
     config.set("APIkey", "api_key", "")
 
     config.add_section("AICO")
     config.set("AICO", "model", "Kimi")
+
+    config.add_section("Thread")
+    config.set("Thread", "thread_count", "4")
 
     config.add_section("Counter")
     config.set("Counter", "open_times", "0")
@@ -84,7 +89,7 @@ def oldConfigCheck():
     open_times = config.get("Counter", "open_times")
     analysis_times = config.get("Counter", "analysis_times")
 
-    if current_config_version != "1.0.0":
+    if current_config_version != "1.0.1":
         config_file = configFile()
         os.remove(config_file)
         initConfig(config_file)

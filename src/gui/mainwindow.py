@@ -1,6 +1,6 @@
 from PySide6.QtCore import QMetaObject
 from PySide6.QtGui import QFontDatabase, QFont, QIcon
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFrame, QAbstractItemView
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFrame, QAbstractItemView, QTextEdit
 from qfluentwidgets import (setThemeColor, PushButton, ToolButton, TableWidget, PrimaryPushButton, FluentIcon,
                             ProgressRing, ListWidget)
 from qfluentwidgets.common.style_sheet import styleSheetManager
@@ -65,11 +65,10 @@ class MainWindow(object):
         self.table.horizontalHeader().setHighlightSections(False)  # 选中时表头不加粗
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)  # 单选模式
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 禁止双击编辑
-        self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels(["ID", "原始文本", "编码结果", "编码理由"])
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(["ID", "原始文本", "编码"])
         self.table.setColumnWidth(0, 46)  # 1206
-        self.table.setColumnWidth(1, 540)
-        self.table.setColumnWidth(2, 320)
+        self.table.setColumnWidth(1, 860)
         self.table.setColumnWidth(3, 300)
         styleSheetManager.deregister(self.table)  # 禁用皮肤，启用自定义 QSS
         with open(getResource("src/style/table.qss"), encoding="utf-8") as file:
@@ -148,10 +147,10 @@ class MainWindow(object):
         self.buttonSeparator.setObjectName("buttonSeparator")
         self.buttonSeparator.setFixedSize(1, 30)
 
-        self.standardCodingButton = PushButton("开始批量编码", self)
-        self.standardCodingButton.setFixedWidth(120)
-        # self.singleCodingButton = PrimaryPushButton("单个编码", self)
-        # self.singleCodingButton.setFixedWidth(120)
+        # self.standardCodingButton = PushButton("开始批量编码", self)
+        # self.standardCodingButton.setFixedWidth(120)
+        self.singleCodingButton = PrimaryPushButton("单个编码", self)
+        self.singleCodingButton.setFixedWidth(120)
 
         self.buttonLayout = QHBoxLayout()
         self.buttonLayout.setSpacing(12)
@@ -162,8 +161,8 @@ class MainWindow(object):
         # self.buttonLayout.addSpacing(8)
         self.buttonLayout.addWidget(self.buttonSeparator)
         self.buttonLayout.addSpacing(8)
-        self.buttonLayout.addWidget(self.standardCodingButton)
-        # self.buttonLayout.addWidget(self.singleCodingButton)
+        # self.buttonLayout.addWidget(self.standardCodingButton)
+        self.buttonLayout.addWidget(self.singleCodingButton)
 
         # 框架叠叠乐
 
@@ -174,7 +173,10 @@ class MainWindow(object):
         self.layout.setContentsMargins(36, 20, 36, 24)
         self.layout.addLayout(self.headerLayout)
         self.layout.addSpacing(24)
+        # self.layout.addLayout(self.logLayout)
+        # self.layout.addSpacing(24)
         self.layout.addWidget(self.tableFrame)
+        self.layout.addSpacing(24)
         self.layout.addWidget(self.infoFrame)
         self.layout.addSpacing(24)
         self.layout.addLayout(self.buttonLayout)
