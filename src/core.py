@@ -627,7 +627,7 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         if self.doingCoding:
             self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [停止编码]：正在等待线程结束，请耐心等待...")
             self.worker.stop()
-            self.lisenToWorker(False)
+            # self.lisenToWorker(False)
 
     def exportCodingResult(self):
         if self.doingCoding:

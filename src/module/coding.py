@@ -34,6 +34,7 @@ class AICodingWorkerThread(QThread):
 
     def stop(self):
         self._stop_event.set()
+        self.running_signal.emit(False)
         self.wait()
 
     def __del__(self):
