@@ -31,7 +31,7 @@ VSVersionInfo(
         StringStruct(u'FileVersion', u'1'),
         StringStruct(u'LegalCopyright', u'Copyright (C) 2024 Shaw'),
         StringStruct(u'ProductName', u'AICodingOfficer'),
-        StringStruct(u'ProductVersion', u'1.0.2')])
+        StringStruct(u'ProductVersion', u'1.0.0')])
       ]), 
     VarFileInfo([VarStruct(u'Translation', [2052, 1200])])
   ]
