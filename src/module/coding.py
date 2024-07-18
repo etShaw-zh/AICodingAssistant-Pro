@@ -12,27 +12,25 @@ class AICodingWorkerThread(QThread):
     output_signal = Signal(str)
     running_signal = Signal(bool)
 
-    def __init__(self, texts):
+    def __init__(self, limit):
         super().__init__()
-        self.texts = texts
         self.THREAD_COUNT = readConfig().getint("Thread", "thread_count")
         self.thread_results = {}
         self.local_db_file_path = localDBFilePath()
         self.DATABASE_PATH = self.local_db_file_path
         self.TABLE_NAME = "prompt"
         self.LABEL_COLUMN_NAME = "prompt_code"
-        self.LIMIT = -1
+        self.LIMIT = limit
         self.DEFAULT_NODE_RECOGNITION_PROMPT = ""
         self._stop_event = threading.Event()
 
     def run(self):
         self._stop_event.clear() # 重置停止事件
         self.running_signal.emit(True)
-        self.output_signal.emit('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "]  [开始编码]")
-
         main_coding(self._stop_event, self.output_signal, self.thread_results, self.THREAD_COUNT, self.DATABASE_PATH, self.TABLE_NAME, self.LABEL_COLUMN_NAME, self.LIMIT, self.DEFAULT_NODE_RECOGNITION_PROMPT)
 
-        self.output_signal.emit('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + ']  [编码完成]')
+        # self.output_signal.emit('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + ']  [编码任务结束]')
+        self.running_signal.emit(False)
 
     def stop(self):
         self._stop_event.set()
@@ -53,6 +51,7 @@ def send_request(url, headers, data):
 
 def get_code_from_gpt(output_signal, prompt_content):
     MOONSHOT_API_KEY = readConfig().get("APIkey", "api_key")
+    MODEL_TYPE = readConfig().get("AICO", "model")
     url = 'https://api.moonshot.cn/v1/chat/completions' 
 
     headers = {
@@ -61,15 +60,30 @@ def get_code_from_gpt(output_signal, prompt_content):
     }
 
     data = {
-        "model": "moonshot-v1-8k",
-        "messages": [{"role": "user", "content": prompt_content}],
+        "model": MODEL_TYPE,
+        "messages": [
+            {
+                "role": "system",
+                "content": "您将看到一组论坛中的话题和回帖，您的任务是优先根据下面的编码表中的含义解释对每个回帖提取一组标签，并在一组 JSON 对象中输出。",
+            },
+            {
+                "role": "user", 
+                "content": prompt_content,
+                "partial": True
+            },
+            # {
+            #     "role": "assistant",
+            #     "content": "",
+            #     "partial": True
+            # },
+            ],
         "temperature": 0.3,
         "max_tokens": 1000,
     }
 
     response = send_request(url, headers, data)
     if 'error' in response:
-        output_signal.emit("[Notice] [GPT返回]：" + str(response))
+        output_signal.emit("[Notice] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [GPT返回]：" + str(response))
         time.sleep(10)
         return None
     return response
@@ -99,7 +113,7 @@ def worker(stop_event, output_signal, input_queue, output_dict, db_path, table_n
         if stop_event.is_set():
             break
         record = input_queue.get()
-        output_signal.emit("[Notice] [当前线程]：{}，当前还有{}条数据未处理".format(threading.current_thread().name, input_queue.qsize()))
+        output_signal.emit("[Notice] [{}] [当前线程]: {}，当前还有{}条数据未处理".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), threading.current_thread().name, input_queue.qsize()))
         try:
             encoded_record = encode_data(output_signal, record, default_node_recognition_prompt, label)
             if encoded_record[label] != 'None':
@@ -108,7 +122,7 @@ def worker(stop_event, output_signal, input_queue, output_dict, db_path, table_n
                 conn.commit()
                 output_dict[encoded_record['index']] = encoded_record
             else:
-                output_signal.emit("[Notice] [编码失败]：无法从GPT获取代码")
+                output_signal.emit("[Notice] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [编码失败]: 无法从GPT获取代码")
         except sqlite3.Error as e:
             print("An error occurred:", e.args[0])
     conn.close()
@@ -144,4 +158,4 @@ def main_coding(stop_event, output_signal, thread_results, THREAD_COUNT, DATABAS
     for t in threads:
         t.join()
 
-    output_signal.emit("[Notice] 总共还有{}条数据未处理".format(len(fetch_data_from_database(DATABASE_PATH, TABLE_NAME, LABEL_COLUMN_NAME))))
+    output_signal.emit("[Notice] [{}] [编码统计]：总共还有{}条数据未处理".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), len(fetch_data_from_database(DATABASE_PATH, TABLE_NAME, LABEL_COLUMN_NAME))))

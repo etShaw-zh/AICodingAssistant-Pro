@@ -30,7 +30,7 @@ class AutoCodingWindow:
 
         # 标题区域
 
-        self.titleLabel = QLabel("AI Coding Officer Pro by Shaw")
+        self.titleLabel = QLabel("AI Coding Officer Pro")
         self.titleLabel.setObjectName("titleLabel")
         self.titleLabel.setFont(QFont(font_family))
 
@@ -154,9 +154,15 @@ class AutoCodingWindow:
         self.buttonSeparator.setObjectName("buttonSeparator")
         self.buttonSeparator.setFixedSize(1, 30)
 
+        self.exportCodingResultButton = PushButton("导出编码", self)
+        self.exportCodingResultButton.setFixedWidth(120)
+        # self.exprotButton.setEnabled(False)
         self.stopCodingButton = PushButton("停止编码", self)
         self.stopCodingButton.setFixedWidth(120)
         self.stopCodingButton.setEnabled(False)
+        self.testCodingButton = PushButton("测试编码", self)
+        self.testCodingButton.setFixedWidth(120)
+        # self.testCodingButton.setEnabled(False)
         self.standardCodingButton = PushButton("开始批量编码", self)
         self.standardCodingButton.setFixedWidth(120)
         # self.standardCodingButton.setEnabled(False)
@@ -171,9 +177,14 @@ class AutoCodingWindow:
         self.buttonLayout.addWidget(self.loadDataButton)
         self.buttonLayout.addWidget(self.buttonSeparator)
         self.buttonLayout.addSpacing(4)
+        self.buttonLayout.addWidget(self.testCodingButton)
+        self.buttonLayout.addSpacing(8)
         self.buttonLayout.addWidget(self.standardCodingButton)
         self.buttonLayout.addSpacing(8)
         self.buttonLayout.addWidget(self.stopCodingButton)
+        self.buttonLayout.addWidget(self.buttonSeparator)
+        self.buttonLayout.addSpacing(8)
+        self.buttonLayout.addWidget(self.exportCodingResultButton)
 
 
         # 框架叠叠乐
@@ -231,4 +242,4 @@ class AutoCodingWindow:
         self.replyFilePath = self.selectFile(self.replyInfo, "Reply CSV", "CSV 文件 (*.csv);;所有文件 (*)")
 
     def selectSchemaFile(self):
-        self.codingSchemePath = self.selectFile(self.schemaInfo, "Schema JSON", "JSON 文件 (*.json);;所有文件 (*)")
+        self.codingSchemePath = self.selectFile(self.schemaInfo, "Schema CSV", "CSV 文件 (*.csv);;所有文件 (*)")

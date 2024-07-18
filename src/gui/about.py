@@ -46,24 +46,40 @@ class AboutWindow(object):
 
         # 计数
 
-        self.openTimesTitle = QLabel("软件启动")
-        self.openTimes = QLabel("0")
-        self.openTimesCard = self.usageCard(self.openTimesTitle, self.openTimes)
+        # 访问次数
+        # self.visitTimesTitle = QLabel("访问次数")
+        # self.visitTimes = QLabel("0")
+        # self.visitTimesCard = self.usageCard(self.visitTimesTitle, self.visitTimes)
 
-        self.analysisTimesTitle = QLabel("自动编码文本")
-        self.analysisTimes = QLabel("0")
-        self.analysisTimesCard = self.usageCard(self.analysisTimesTitle, self.analysisTimes)
+        self.downloadTimesTitle = QLabel("下载次数")
+        self.downloadTimes = QLabel("0")
+        self.downloadTimesCard = self.usageCard(self.downloadTimesTitle, self.downloadTimes)
 
-        self.renameTimesTitle = QLabel("手动编码文本")
-        self.renameTimes = QLabel("0")
-        self.renameTimescard = self.usageCard(self.renameTimesTitle, self.renameTimes)
+        self.starCountTitle = QLabel("Star 数")
+        self.starCount = QLabel("0")
+        self.starCountCard = self.usageCard(self.starCountTitle, self.starCount)
+
+        # self.openTimesTitle = QLabel("软件启动")
+        # self.openTimes = QLabel("0")
+        # self.openTimesCard = self.usageCard(self.openTimesTitle, self.openTimes)
+
+        # self.analysisTimesTitle = QLabel("自动编码文本")
+        # self.analysisTimes = QLabel("0")
+        # self.analysisTimesCard = self.usageCard(self.analysisTimesTitle, self.analysisTimes)
+
+        # self.renameTimesTitle = QLabel("手动编码文本")
+        # self.renameTimes = QLabel("0")
+        # self.renameTimescard = self.usageCard(self.renameTimesTitle, self.renameTimes)
 
         self.usageCardLayout = QHBoxLayout()
         self.usageCardLayout.setSpacing(12)
         self.usageCardLayout.setContentsMargins(0, 0, 0, 0)
-        self.usageCardLayout.addWidget(self.openTimesCard)
-        self.usageCardLayout.addWidget(self.analysisTimesCard)
-        self.usageCardLayout.addWidget(self.renameTimescard)
+        self.usageCardLayout.addWidget(self.downloadTimesCard)
+        # self.usageCardLayout.addWidget(self.visitTimesCard)
+        self.usageCardLayout.addWidget(self.starCountCard)
+        # self.usageCardLayout.addWidget(self.openTimesCard)
+        # self.usageCardLayout.addWidget(self.analysisTimesCard)
+        # self.usageCardLayout.addWidget(self.renameTimescard)
 
         # PING
 

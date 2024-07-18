@@ -2,6 +2,7 @@ import os
 import re
 import platform
 import configparser
+import arrow
 
 
 # 文件夹存在检查
@@ -36,6 +37,11 @@ def configFile():
 
     return config_file
 
+def exportCodingResultPath():
+    export_coding_result_path = os.path.join(configPath(), "export")
+    newFolder(export_coding_result_path)
+
+    return export_coding_result_path + "/coding_result_{}.csv".format(arrow.now().format('YYYY_MM_DD_HH_mm_ss'))
 
 def localDBFilePath():
     local_db_file_path = os.path.join(configPath(), "coding_framework")
@@ -58,7 +64,7 @@ def initConfig(config_file):
     config = configparser.ConfigParser()
 
     config.add_section("Language")
-    config.set("Language", "language", "简体中文")
+    config.set("Language", "language", "Chinese")
 
     config.add_section("Application")
     config.set("Application", "version", "1.0.1")
@@ -67,7 +73,7 @@ def initConfig(config_file):
     config.set("APIkey", "api_key", "")
 
     config.add_section("AICO")
-    config.set("AICO", "model", "Kimi")
+    config.set("AICO", "model", "moonshot-v1-8k")
 
     config.add_section("Thread")
     config.set("Thread", "thread_count", "4")

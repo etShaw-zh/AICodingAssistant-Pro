@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     # # 默认加载系统语言
     # configLanguage = readConfig().get("Language", "language")
-    # if configLanguage == "简体中文":
+    # if configLanguage == "Chinese":
     #     systemLanguage = "zh_CN"
     # else:
     #     systemLanguage = "en_US"

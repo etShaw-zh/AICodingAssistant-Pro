@@ -28,8 +28,8 @@ class SettingWindow(object):
         self.language = EditableComboBox(this_window)
         self.language.setMinimumWidth(200)
         self.language.setMaximumWidth(200)
-        self.language.addItems(["简体中文", "English"])
-        self.language.setText("简体中文")
+        self.language.addItems(["Chinese", "English"])
+        self.language.setText("Chinese")
 
         self.languageCard = self.settingCard(self.languageTitle, self.languageInfo, self.language, "full")
 
@@ -57,8 +57,8 @@ class SettingWindow(object):
         self.modelType = EditableComboBox(self)
         self.modelType.setMinimumWidth(200)
         self.modelType.setMaximumWidth(200)
-        self.modelType.addItems(["ChatGPT-3.5", "Kimi", "QWen-7B"])
-        self.modelType.setText("Kimi")  # 设置默认值为 "Kimi"
+        self.modelType.addItems(["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"])
+        self.modelType.setText("moonshot-v1-8k")  # 设置默认值为 "Kimi"
 
         self.modelTypeCard = self.settingCard(self.modelTypeTitle, self.dateInfoFrame, self.modelType, "full")
 
@@ -79,7 +79,7 @@ class SettingWindow(object):
         # 设置模型API key 
         
         self.modelApiTitle = QLabel("GPT API Key")
-        self.modelApiInfo = QLabel("输入你的GPT API Key，用于调用GPT模型。")
+        self.modelApiInfo = QLabel("输入你的Kimi API Key，用于调用GPT模型。")
 
         self.modelApiKey = LineEdit(self)
         self.modelApiKey.setFixedWidth(200)

@@ -29,7 +29,7 @@ class MainWindow(object):
 
         # 标题区域
 
-        self.titleLabel = QLabel("AI Coding Officer Pro by Shaw")
+        self.titleLabel = QLabel("AI Coding Officer Pro")
         self.titleLabel.setObjectName("titleLabel")
         self.titleLabel.setFont(QFont(font_family))
 

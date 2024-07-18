@@ -3,6 +3,7 @@ import time
 import threading
 import shutil
 import arrow
+import json
 import requests
 import pandas as pd
 import sqlite3
@@ -26,7 +27,8 @@ from src.gui.autocodingwindow import AutoCodingWindow
 
 from src.function import log, readCSV, initList, addTimes, openFolder, loadLanguage
 from src.module.coding import AICodingWorkerThread, fetch_data_from_database, worker
-from src.module.config import configFile, localDBFilePath, logFolder, readConfig, oldConfigCheck
+from src.module.config import configFile, localDBFilePath, logFolder, readConfig, oldConfigCheck, exportCodingResultPath
+from src.module.localDB import localDB
 from src.module.version import newVersion, currentVersion
 from src.module.resource import getResource
 
@@ -100,6 +102,7 @@ class Window(FramelessWindow):
 
     def __init__(self):
         super().__init__()
+
         self.icon_win_path = getResource("src/image/icon_win.png")
         self.setTitleBar(StandardTitleBar(self))
 
@@ -228,9 +231,10 @@ class Window(FramelessWindow):
     def showMessageBox(self):
         w = MessageBox(
             '支持作者🥰',
-            '个人开发不易，如果这个项目帮助到了您，可以考虑请作者喝一瓶快乐水🥤。您的支持就是作者开发和维护项目的动力🚀',
+            '您的支持就是作者开发和维护项目的动力🚀',
             self
         )
+
         w.yesButton.setText('来啦老弟')
         w.cancelButton.setText('下次一定')
 
@@ -244,6 +248,8 @@ class MyMainWindow(QMainWindow, MainWindow):
         self.initConnect()
         self.initList()
         self.checkVersion()
+
+        self.localDBFunc = localDB()
 
         oldConfigCheck()
         addTimes("open_times")
@@ -437,6 +443,13 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         addTimes("open_times")
         self.config = readConfig()
 
+        self.localDBFunc = localDB()
+
+        # 检查本地数据
+        self.has_coding_count, self.no_coding_count = len(self.localDBFunc.readPromptFromLocalDB(True)), len(self.localDBFunc.readPromptFromLocalDB(False))
+        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]：加载本地数据{}条".format(self.has_coding_count + self.no_coding_count))
+        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]：已编码{}条，未编码{}条".format(self.has_coding_count, self.no_coding_count))
+
         self.local_db_file_path = localDBFilePath()
         self.topicFilePath = self.topicInfo.text()
         self.replyFilePath = self.replyInfo.text()
@@ -458,10 +471,7 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
             'Chatgpt类型的Ai工具不是搜索引擎，而是生产工具，目前对教师的备课可以起到重要的作用。',
             '@张建鑫：它不会替代你思考，可以帮助你思考的更多面向。'
         ]
-
-        self.worker = AICodingWorkerThread(self.texts)
-        self.worker.output_signal.connect(self.updateLogContent)
-        self.worker.running_signal.connect(self.lisenToWorker)
+        self.limit = 10 # 默认编码10条测试数据
 
     def initConnect(self):
         self.newVersionButton.clicked.connect(self.openRelease)
@@ -471,6 +481,12 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         self.loadDataButton.clicked.connect(self.loadData)
         self.standardCodingButton.clicked.connect(self.standardCoding)
         self.stopCodingButton.clicked.connect(self.stopCoding)
+        self.exportCodingResultButton.clicked.connect(self.exportCodingResult)
+        self.testCodingButton.clicked.connect(self.testCoding)
+
+        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]：初始化成功")
+        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]：当前版本{}".format(currentVersion()))
+        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]：示例数据下载及教程地址：{}".format('https://xiaojianjun.cn/aicodingofficer/'))
 
     def loadData(self):
         if self.doingCoding:
@@ -489,6 +505,9 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         self.topics = pd.read_csv(self.topicFilePath, encoding='utf-8', index_col=0)
         self.replys = pd.read_csv(self.replyFilePath, encoding='utf-8', index_col=0)
         self.codingScheme = pd.read_csv(self.codingSchemePath, encoding='utf-8')
+        _keys = self.codingScheme['code'].to_list()
+        for key in _keys:
+            self.replys[key] = ''
         self.prepare_prompt()
         self.showInfo("success", "成功", "数据加载成功")
         self.standardCodingButton.setEnabled(True)
@@ -539,7 +558,7 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
 
         for topic_id in topic_reply_tree_dict:
             for reply_tree in topic_reply_tree_dict[topic_id]['reply_tree']:
-                prompt_content = r"""您将看到一组论坛中的话题和回帖，您的任务是优先根据下面的编码表中的含义解释对每个回帖提取一组标签“codes”（只有当编码表中没有合适的标签时才输出“NULL”），并以中文举例说明提取标签的理由，注意将理由翻译为中文列出。结果以JSON格式输出：{"reply_id":"1234","tags":["code-1","code-2",...,"code-n"],"reason":["原因和例子-1","原因和例子-2",...,"原因和例子-n"]}，注意只输出JSON，不要包括其他内容!
+                prompt_content = r"""您将看到一组论坛中的话题和回帖，您的任务是优先根据下面的编码表中的含义解释对每个回帖提取一组标签“codes”（只有当编码表中没有合适的标签时才输出“NULL”），并以中文举例说明提取标签的理由，注意将理由翻译为中文列出。结果以JSON格式的数组输出：[{"reply_id":"1234","tags":[],"reason":[]},{"reply_id":"2345","tags":[],"reason":[]}]，注意只输出JSON，不要包括其他内容!tags和reason中的内容一一对应，请根据实际情况填写，不要直接复制粘贴。
                 编码表：\n
                 """
                 prompt_content += r"""
@@ -562,9 +581,28 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         self.prompt_df['prompt_code_orign'] = 'None'
         self.prompt_df.to_sql('prompt', self.conn, if_exists='replace', index=True)
 
+    def testCoding(self):
+        if not self.doingCoding:
+            self.limit = 10 # 批量编码测试数据
+            self.worker = AICodingWorkerThread(self.limit)
+            self.worker.output_signal.connect(self.updateLogContent)
+            self.worker.running_signal.connect(self.lisenToWorker)
+            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [开始测试编码]：10条"
+            self.updateLogContent(t)
+            self.doingCoding = True
+            self.stopCodingButton.setEnabled(True)
+            self.testCodingButton.setEnabled(False)
+            self.worker.start()
+        else:
+            self.showInfo("warning", "警告", "编码正在进行中，请勿重复点击")
+
     def standardCoding(self):
         if not self.doingCoding:
-            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "]  [开始编码]"
+            self.limit = -1 # 批量编码所有数据
+            self.worker = AICodingWorkerThread(self.limit)
+            self.worker.output_signal.connect(self.updateLogContent)
+            self.worker.running_signal.connect(self.lisenToWorker)
+            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [开始编码]"
             self.updateLogContent(t)
             self.doingCoding = True
             self.stopCodingButton.setEnabled(True)
@@ -577,14 +615,60 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         self.doingCoding = state
         self.stopCodingButton.setEnabled(state)
         self.standardCodingButton.setEnabled(not state)
+        self.testCodingButton.setEnabled(not state)
         if not state:
-            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "]  [编码已停止]"
-            self.updateLogContent(t)
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [编码已停止]")
+            has_coding_count = len(self.localDBFunc.readPromptFromLocalDB(True))
+            no_coding_count = len(self.localDBFunc.readPromptFromLocalDB(False))
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [编码统计]：当前编码{}条，剩余{}条".format(has_coding_count, no_coding_count))
 
     def stopCoding(self):
         if self.doingCoding:
             self.worker.stop()
             self.lisenToWorker(False)
+
+    def exportCodingResult(self):
+        if self.doingCoding:
+            self.showInfo("warning", "警告", "编码正在进行中，请等待编码完成后再导出")
+            return
+        coding_result_df = pd.read_sql('select * from prompt', self.conn)
+        coding_result_df.index = coding_result_df['index']
+        reply_df = pd.read_sql('select * from replys', self.conn)
+        reply_df.index = reply_df['reply_id']
+        # 解析编码结果
+        success_count = 0
+        fail_count = 0
+        for index, row in coding_result_df.iterrows():
+            if row['prompt_code'] != 'None':
+                try:
+                    code_response_lst = json.loads(row['prompt_code'])
+                    for code_response in code_response_lst:
+                        code_res = code_response
+                        reply_id = int(code_res['reply_id'])
+                        tags_lst = code_res['tags']
+                        reasons_lst = code_res['reason']
+                        reason_str = " | ".join(reasons_lst)
+                        for i in range(len(tags_lst)):
+                            tag = tags_lst[i]
+                            reply_df.loc[reply_id, tag] = 1
+                            reply_df.loc[reply_id, 'reason'] = reason_str
+                            success_count += 1
+                except Exception as e:
+                    print(f"编码结果解析失败: {e}")
+                    fail_count += 1
+        log(f"编码结果解析成功: {success_count} 条, 失败: {fail_count} 条")
+        self.updateLogContent("[Notice] [{}] [编码结果解析成功: {success_count} 条, 失败: {fail_count} 条]".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), success_count=success_count, fail_count=fail_count))
+        self.updateLogContent("[Notice] [{}] [编码结果导出中...]".format(arrow.now().format('YYYY-MM-DD HH:mm:ss')))
+        save_path = exportCodingResultPath()
+        self.updateLogContent("[Notice] [{}] [编码结果导出路径]: {}".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), save_path))
+        reply_df.to_csv(save_path, encoding='utf-8-sig')
+        if os.path.exists(save_path):
+            self.showInfo("success", "成功", "编码结果导出成功，正在打开文件，请稍后...")
+            openFolder(save_path)
+        else:
+            self.showInfo("error", "错误", "编码结果导出失败")
+        self.testCodingButton.setEnabled(True)
+        self.standardCodingButton.setEnabled(True)
 
     def updateLogContent(self, message):
         self.logContent.append(message)
@@ -636,12 +720,53 @@ class MyAboutWindow(QDialog, AboutWindow):
         self.loadConfig()
 
     def loadConfig(self):
-        self.openTimes.setText(self.config.get("Counter", "open_times"))
-        self.analysisTimes.setText(self.config.get("Counter", "analysis_times"))
+        owner = "etShaw-zh"
+        repo = "AICodingAssistant-Pro"
+        try:
+            repo_data = self.get_repo_info(owner, repo)
+            releases = self.get_releases_info(owner, repo)
+            download_times = self.count_downloads(releases)
+            self.downloadTimes.setText(str(download_times))  
+            self.starCount.setText(str(repo_data["star_count"]))  
+        except Exception as e:
+            print(f"加载配置失败: {e}")
+            self.downloadTimes.setText("Error")
+            self.starCount.setText("Error")
+        # self.openTimes.setText(self.config.get("Counter", "open_times"))
+        # self.analysisTimes.setText(self.config.get("Counter", "analysis_times"))
+
+    def get_repo_info(self, username, repo_name):
+        url = f"https://api.github.com/repos/{username}/{repo_name}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            repo_data = response.json()
+            return {
+                "star_count": repo_data["stargazers_count"],
+                "fork_count": repo_data["forks_count"],
+                "watch_count": repo_data["watchers_count"]
+            }
+        else:
+            return f"Error: {response.status_code} - {response.reason}"
+        
+    def get_releases_info(self, username, repo_name):
+        url = f"https://api.github.com/repos/{username}/{repo_name}/releases"
+        response = requests.get(url)
+        if response.status_code == 200:
+            releases_data = response.json()
+            return releases_data
+        else:
+            return f"Error: {response.status_code} - {response.reason}"
+
+    def count_downloads(self, releases):
+        total_downloads = 0
+        for release in releases:
+            for asset in release.get('assets', []):
+                total_downloads += asset['download_count']
+        return total_downloads
 
     def checkPing(self):
-        thread1 = threading.Thread(target=self.checkPingThread, args=("https://aicodingassistant.cn/", self.anilistPing)) # TODO: 替换API
-        thread2 = threading.Thread(target=self.checkPingThread, args=("https://aicodingassistant.cn/", self.bangumiPing)) # TODO: 替换API
+        thread1 = threading.Thread(target=self.checkPingThread, args=("www.moonshot.cn", self.anilistPing)) # TODO: 替换API
+        thread2 = threading.Thread(target=self.checkPingThread, args=("aicodingassistant.cn", self.bangumiPing)) # TODO: 替换API
         thread1.start()
         thread2.start()
 
