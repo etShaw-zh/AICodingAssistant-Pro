@@ -15,12 +15,12 @@ class AICodingWorkerThread(QThread):
     def __init__(self, limit):
         super().__init__()
         self.THREAD_COUNT = readConfig().getint("Thread", "thread_count")
+        self.LIMIT = limit
         self.thread_results = {}
         self.local_db_file_path = localDBFilePath()
         self.DATABASE_PATH = self.local_db_file_path
         self.TABLE_NAME = "prompt"
         self.LABEL_COLUMN_NAME = "prompt_code"
-        self.LIMIT = limit
         self.DEFAULT_NODE_RECOGNITION_PROMPT = ""
         self._stop_event = threading.Event()
 
@@ -34,6 +34,10 @@ class AICodingWorkerThread(QThread):
 
     def stop(self):
         self._stop_event.set()
+        self.wait()
+
+    def __del__(self):
+        self.stop()
 
 def send_request(url, headers, data):
     try:
