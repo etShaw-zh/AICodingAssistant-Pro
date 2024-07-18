@@ -40,7 +40,7 @@ class SettingWindow(object):
         self.modelTypeInfo = QLabel("指定编码的GPT模型，不同模型有不同的编码效果。")
         self.modelTypeInfo.setObjectName("cardInfoLabel")
 
-        self.modelTypeUrl = QLabel("<a href='https://xiaojianjun.cn/aicodingofficer/'"
+        self.modelTypeUrl = QLabel("<a href='https://platform.moonshot.cn/'"
                                   "style='font-size:12px;color:#2E75B6;'>查看在线文档</a>")
         self.modelTypeUrl.setOpenExternalLinks(True)
 
