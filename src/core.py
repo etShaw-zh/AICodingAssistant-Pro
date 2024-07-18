@@ -446,6 +446,7 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         self.localDBFunc = localDB()
 
         # 检查本地数据
+        self.localDBFunc.checkDB()
         self.has_coding_count, self.no_coding_count = len(self.localDBFunc.readPromptFromLocalDB(True)), len(self.localDBFunc.readPromptFromLocalDB(False))
         self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]：加载本地数据{}条".format(self.has_coding_count + self.no_coding_count))
         self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]：已编码{}条，未编码{}条".format(self.has_coding_count, self.no_coding_count))

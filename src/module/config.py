@@ -113,6 +113,6 @@ def readConfig():
     config = configparser.ConfigParser()
     config_file = configFile()
 
-    config.read(config_file, encoding="utf-8", errors="ignore")
+    config.read(config_file, encoding="utf-8")
 
     return config
