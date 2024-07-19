@@ -4,6 +4,7 @@ import platform
 import configparser
 import arrow
 
+from src.module import version
 
 # 文件夹存在检查
 def newFolder(folder_name):
@@ -67,7 +68,7 @@ def initConfig(config_file):
     config.set("Language", "language", "Chinese")
 
     config.add_section("Application")
-    config.set("Application", "version", "1.0.0")
+    config.set("Application", "version", version.currentVersion())
 
     config.add_section("APIkey")
     config.set("APIkey", "api_key", "")
@@ -95,7 +96,7 @@ def oldConfigCheck():
     open_times = config.get("Counter", "open_times")
     analysis_times = config.get("Counter", "analysis_times")
 
-    if current_config_version != "1.0.0":
+    if current_config_version != version.currentVersion():
         config_file = configFile()
         os.remove(config_file)
         initConfig(config_file)

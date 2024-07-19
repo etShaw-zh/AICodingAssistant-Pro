@@ -1,4 +1,5 @@
 import sphinx_rtd_theme
+from src.module.version import currentVersion
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Configuration file for the Sphinx documentation builder.
@@ -12,7 +13,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 project = 'AI Coding Officer'
 copyright = '2024, Jianjun Xiao'
 author = 'Jianjun Xiao'
-release = 'v1.0.0'
+release = 'v' + currentVersion()
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

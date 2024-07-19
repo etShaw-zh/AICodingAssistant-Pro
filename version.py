@@ -1,6 +1,7 @@
 import re
+from src.module.version import currentVersion
 
-ver = "1.0.0"
+ver = currentVersion()
 ver_sp = [num for num in str(ver).split(".")]
 
 if len(ver) == 3:
