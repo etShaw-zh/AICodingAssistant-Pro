@@ -449,7 +449,7 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         # 检查本地数据
         self.localDBFunc.checkDB()
         self.has_coding_count, self.no_coding_count = len(self.localDBFunc.readPromptFromLocalDB(True)), len(self.localDBFunc.readPromptFromLocalDB(False))
-        
+
         if self.language == 'Chinese':
             self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]: 加载了{}条本地数据".format(self.has_coding_count + self.no_coding_count))
             self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]: 已编码{}条，未编码{}条".format(self.has_coding_count, self.no_coding_count))
@@ -494,11 +494,11 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         if self.language == 'Chinese':
             self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]: 初始化成功")
             self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]: 当前版本 {}".format(currentVersion()))
-            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]: 样例数据下载和教程链接: {}".format('https://xiaojianjun.cn/aicodingofficer/'))
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]: 样例数据下载和教程链接: {}".format('https://aicodingassistant-pro.readthedocs.io/en/latest/index.html/'))
         else:
             self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Initialization]: Initialization successful")
             self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Initialization]: Current version {}".format(currentVersion()))
-            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Initialization]: Sample data download and tutorial URL: {}".format('https://xiaojianjun.cn/aicodingofficer/'))
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Initialization]: Sample data download and tutorial URL: {}".format('https://aicodingassistant-pro.readthedocs.io/en/latest/index.html'))
     
     def loadData(self):
         if self.doingCoding:
