@@ -1,8 +1,3 @@
-.. Groove documentation master file, created by
-   sphinx-quickstart on Sun Dec 25 09:51:59 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. raw:: html
 
     <p align="center">
@@ -10,13 +5,13 @@
     </p>
 
    <h1 align="center">
-      AI Coding Assistant Pro (AICO, 爱酷科研助手) 
+      AI Coding Officer (AICO, 爱酷科研助手) 
    </h1>
 
    <hr/>
 
    <p align="center">
-      AI Coding Assistant Pro 是一款前沿的人工智能编码助手，专为提升文本编码的效率而设计。
+      AI Coding Officer 是一款前沿的人工智能编码助手，专为提升文本编码的效率而设计。
    </p>
 
    <p align="center">
@@ -37,7 +32,7 @@
 
 欢迎来到 AI Coding Officer 文档
 ======================================
-本文档是 `AICodingAssistant-Pro <https://github.com/etShaw-zh/AICodingAssistant-Pro>`_ 项目的说明及帮助文档，包含用户指南和开发者指南两部分。
+本文档是 `AI Coding Officer <https://github.com/etShaw-zh/AICodingAssistant-Pro>`_ 项目的说明及帮助文档，包含用户指南和开发者指南两部分。
 
 .. toctree::
       :maxdepth: 2
