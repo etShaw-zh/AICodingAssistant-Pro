@@ -135,7 +135,7 @@ class Window(FramelessWindow):
     def initNavigation(self):
         self.navigationInterface.setExpandWidth(150)
 
-        self.navigationInterface.addItem('MyAutoCodingWindow', FIF.ROBOT, '自动编码', lambda: self.switchTo(self.myAutoCodingWindow))
+        self.navigationInterface.addItem('MyAutoCodingWindow', FIF.ROBOT, 'Auto Coding', lambda: self.switchTo(self.myAutoCodingWindow))
         
         # TODO: 优化导航栏，添加手动编码功能
         # self.navigationInterface.addItem('MyMainWindow', FIF.CODE, '手动', lambda: self.switchTo(self.myMainWindow))
@@ -143,21 +143,21 @@ class Window(FramelessWindow):
 
         self.navigationInterface.addWidget(
             routeKey='avatar',
-            widget=NavigationAvatarWidget('作者', self.icon_win_path),
+            widget=NavigationAvatarWidget('Author', self.icon_win_path),
             onClick=self.showMessageBox,
             position=NavigationItemPosition.BOTTOM,
         )
         self.navigationInterface.addItem(
             'About Interface',
             FIF.INFO,
-            '关于',
+            'About',
             onClick=self.openAbout,
             position=NavigationItemPosition.BOTTOM
         )
         self.navigationInterface.addItem(
             'Setting Interface', 
             FIF.SETTING, 
-            '设置', 
+            'Setting', 
             onClick=self.openSetting,
             position=NavigationItemPosition.BOTTOM
         )
@@ -206,7 +206,7 @@ class Window(FramelessWindow):
         setting.exec()
 
     def closeSetting(self, title):
-        self.showInfo("success", title, "配置修改成功")
+        self.showInfo("success", title, "Configuration modified successfully")
     
     def showInfo(self, state, title, content):
         info_state = {
@@ -284,7 +284,7 @@ class MyMainWindow(QMainWindow, MainWindow):
         for text in ['编码1', '编码2', '编码3']:
             self.searchList.addItem(QListWidgetItem(text))
 
-        self.typeLabel.setText("当前选中的文本：")
+        self.typeLabel.setText("Currently selected text:")
         self.image.updateImage(getResource("src/image/empty.png"))
 
     def showState(self, state):
@@ -311,7 +311,7 @@ class MyMainWindow(QMainWindow, MainWindow):
     def ThreadCheckVersion(self):
         if newVersion():
             self.newVersionButton.setVisible(True)
-            log("发现有新版本")
+            log("New version found")
 
     def openRelease(self):
         url = QUrl("https://github.com/etShaw-zh/AICodingAssistant-Pro/releases/latest")
@@ -328,7 +328,7 @@ class MyMainWindow(QMainWindow, MainWindow):
 
     def closeSetting(self, title):
         self.selectTable()
-        self.showInfo("success", title, "配置修改成功")
+        self.showInfo("success", title, "Configuration saved successfully")
 
     def RowInTable(self):
         for selected in self.table.selectedRanges():
@@ -437,19 +437,25 @@ class MyMainWindow(QMainWindow, MainWindow):
 class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
     def __init__(self):
         super().__init__()
+        self.config = readConfig()
+        self.language = self.config.get("Language", "language")
         self.setupUI(self)
         self.initConnect()
         oldConfigCheck()
         addTimes("open_times")
-        self.config = readConfig()
 
         self.localDBFunc = localDB()
 
         # 检查本地数据
         self.localDBFunc.checkDB()
         self.has_coding_count, self.no_coding_count = len(self.localDBFunc.readPromptFromLocalDB(True)), len(self.localDBFunc.readPromptFromLocalDB(False))
-        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]：加载本地数据{}条".format(self.has_coding_count + self.no_coding_count))
-        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]：已编码{}条，未编码{}条".format(self.has_coding_count, self.no_coding_count))
+        
+        if self.language == 'Chinese':
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]: 加载了{}条本地数据".format(self.has_coding_count + self.no_coding_count))
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]: 已编码{}条，未编码{}条".format(self.has_coding_count, self.no_coding_count))
+        else:
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Check local data]: Loaded {} pieces of local data".format(self.has_coding_count + self.no_coding_count))
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Check local data]: Coded {} pieces, uncoded {} pieces".format(self.has_coding_count, self.no_coding_count))
 
         self.local_db_file_path = localDBFilePath()
         self.topicFilePath = self.topicInfo.text()
@@ -485,22 +491,27 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         self.exportCodingResultButton.clicked.connect(self.exportCodingResult)
         self.testCodingButton.clicked.connect(self.testCoding)
 
-        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]：初始化成功")
-        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]：当前版本{}".format(currentVersion()))
-        self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]：示例数据下载及教程地址：{}".format('https://xiaojianjun.cn/aicodingofficer/'))
-
+        if self.language == 'Chinese':
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]: 初始化成功")
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]: 当前版本 {}".format(currentVersion()))
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [初始化]: 样例数据下载和教程链接: {}".format('https://xiaojianjun.cn/aicodingofficer/'))
+        else:
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Initialization]: Initialization successful")
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Initialization]: Current version {}".format(currentVersion()))
+            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Initialization]: Sample data download and tutorial URL: {}".format('https://xiaojianjun.cn/aicodingofficer/'))
+    
     def loadData(self):
         if self.doingCoding:
-            self.showInfo("warning", "警告", "编码正在进行中，请勿重复加载数据")
+            self.showInfo("warning", "Warning", "Coding is in progress, please do not reload data")
             return
         if self.topicFilePath == '':
-            self.showInfo("error", "错误", "请先选择话题文件")
+            self.showInfo("error", "Error", "Please select a topic file first")
             return
         if self.replyFilePath == '':
-            self.showInfo("error", "错误", "请先选择回复文件")
+            self.showInfo("error", "Error", "Please select a reply file first")
             return
         if self.codingSchemePath == '':
-            self.showInfo("error", "错误", "请先选择编码方案文件")
+            self.showInfo("error", "Error", "Please select a coding scheme file first")
             return
         
         self.topics = pd.read_csv(self.topicFilePath, encoding='utf-8', index_col=0)
@@ -510,7 +521,7 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         for key in _keys:
             self.replys[key] = ''
         self.prepare_prompt()
-        self.showInfo("success", "成功", "数据加载成功")
+        self.showInfo("success", "Success", "Data load successful")
         self.standardCodingButton.setEnabled(True)
 
         self.topics.to_sql('topics', self.conn, if_exists='replace', index=True)
@@ -588,14 +599,20 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
             self.worker = AICodingWorkerThread(self.limit)
             self.worker.output_signal.connect(self.updateLogContent)
             self.worker.running_signal.connect(self.lisenToWorker)
-            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [开始测试编码]：10条"
+            if self.language == 'Chinese':
+                t = '[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [开始编码] 10条测试数据"
+            else:
+                t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Start coding] 10 pieces of test data"
             self.updateLogContent(t)
             self.doingCoding = True
             self.stopCodingButton.setEnabled(True)
             self.testCodingButton.setEnabled(False)
             self.worker.start()
         else:
-            self.showInfo("warning", "警告", "编码正在进行中，请勿重复点击")
+            if self.language == 'Chinese':
+                self.showInfo("warning", "警告", "编码正在进行中，请勿重载数据")
+            else:
+                self.showInfo("warning", "Warning", "Coding is in progress, please do not reload data")
 
     def standardCoding(self):
         if not self.doingCoding:
@@ -603,14 +620,20 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
             self.worker = AICodingWorkerThread(self.limit)
             self.worker.output_signal.connect(self.updateLogContent)
             self.worker.running_signal.connect(self.lisenToWorker)
-            t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [开始编码]"
+            if self.language == 'Chinese':
+                t = '[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [开始编码] 所有数据"
+            else:
+                t = '[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Start coding] all data"
             self.updateLogContent(t)
             self.doingCoding = True
             self.stopCodingButton.setEnabled(True)
             self.standardCodingButton.setEnabled(False)
             self.worker.start()
         else:
-            self.showInfo("warning", "警告", "编码正在进行中，请勿重复点击")
+            if self.language == 'Chinese':
+                self.showInfo("warning", "警告", "编码正在进行中，请勿重载数据")
+            else:
+                self.showInfo("warning", "Warning", "Coding is in progress, please do not reload data")
 
     def lisenToWorker(self, state):
         self.doingCoding = state
@@ -618,20 +641,29 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         self.standardCodingButton.setEnabled(not state)
         self.testCodingButton.setEnabled(not state)
         if not state:
-            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [编码已停止]")
             has_coding_count = len(self.localDBFunc.readPromptFromLocalDB(True))
             no_coding_count = len(self.localDBFunc.readPromptFromLocalDB(False))
-            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [编码统计]：当前编码{}条，剩余{}条".format(has_coding_count, no_coding_count))
+            if self.language == 'Chinese':
+                self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [编码完成]")
+                self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [检查本地数据]: 已编码{}条，未编码{}条".format(has_coding_count, no_coding_count))
+            else:
+                self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Coding completed]")
+                self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Check local data]: Coded {} pieces, uncoded {} pieces".format(has_coding_count, no_coding_count))
 
     def stopCoding(self):
         if self.doingCoding:
-            self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [停止编码]：正在等待线程结束，请耐心等待...")
+            if self.language == 'Chinese':
+                self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [停止编码]: 等待当前线程结束")
+            else:
+                self.updateLogContent('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [Stop coding]: Wait for the current thread to finish")
             self.worker.stop()
-            # self.lisenToWorker(False)
 
     def exportCodingResult(self):
         if self.doingCoding:
-            self.showInfo("warning", "警告", "编码正在进行中，请等待编码完成后再导出")
+            if self.language == 'Chinese':
+                self.showInfo("warning", "警告", "编码正在进行中，请等待编码完成后再导出")
+            else:
+                self.showInfo("warning", "Warning", "Coding is in progress, please wait for coding to complete before exporting")
             return
         coding_result_df = pd.read_sql('select * from prompt', self.conn)
         coding_result_df.index = coding_result_df['index']
@@ -659,16 +691,25 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
                     print(f"编码结果解析失败: {e}")
                     fail_count += 1
         log(f"编码结果解析成功: {success_count} 条, 失败: {fail_count} 条")
-        self.updateLogContent("[Notice] [{}] [编码结果解析成功: {success_count} 条, 失败: {fail_count} 条]".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), success_count=success_count, fail_count=fail_count))
-        self.updateLogContent("[Notice] [{}] [编码结果导出中...]".format(arrow.now().format('YYYY-MM-DD HH:mm:ss')))
         save_path = exportCodingResultPath()
-        self.updateLogContent("[Notice] [{}] [编码结果导出路径]: {}".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), save_path))
+        if self.language == 'Chinese':
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [编码结果解析成功: {} 条成功, {} 条失败]".format(success_count, fail_count))
+            self.updateLogContent('[提示] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + "] [导出路径]: {}".format(save_path))
+        else:
+            self.updateLogContent("[Notice] [{}] [Coding results parsed successfully: {} succeeded, {} failed]".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), success_count, fail_count))
+            self.updateLogContent("[Notice] [{}] [Export path]: {}".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), save_path))
         reply_df.to_csv(save_path, encoding='utf-8-sig')
         if os.path.exists(save_path):
-            self.showInfo("success", "成功", "编码结果导出成功，正在打开文件，请稍后...")
+            if self.language == 'Chinese':
+                self.showInfo("success", "成功", "导出编码结果成功")
+            else:
+                self.showInfo("success", "Success", "Export coding results successful")
             openFolder(save_path)
         else:
-            self.showInfo("error", "错误", "编码结果导出失败")
+            if self.language == 'Chinese':
+                self.showInfo("error", "错误", "导出编码结果失败")
+            else:
+                self.showInfo("error", "Error", "Export coding results failed")
         self.testCodingButton.setEnabled(True)
         self.standardCodingButton.setEnabled(True)
 
@@ -694,7 +735,10 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
         setting.exec()
 
     def closeSetting(self, title):
-        self.showInfo("success", title, "配置修改成功")
+        if self.language == 'Chinese':
+            self.showInfo("success", title, "配置保存成功")
+        else:
+            self.showInfo("success", title, "Configuration saved successfully")
     
     # 显示提示信息
     def showInfo(self, state, title, content):
@@ -816,7 +860,10 @@ class MySettingWindow(QDialog, SettingWindow):
         with open(configFile(), "w", encoding="utf-8") as content:
             self.config.write(content)
 
-        self.save_notice.emit("配置已保存")
+        if self.language.currentText() == 'Chinese':
+            self.save_notice.emit("配置保存成功")
+        else:
+            self.save_notice.emit("Configuration saved successfully")
         self.close()
 
     def openLocalDBFilePath(self):

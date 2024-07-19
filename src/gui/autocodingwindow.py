@@ -34,7 +34,7 @@ class AutoCodingWindow:
         self.titleLabel.setObjectName("titleLabel")
         self.titleLabel.setFont(QFont(font_family))
 
-        self.subtitleLabel = QLabel("一款前沿的人工智能编码助手，专为提升文本编码的效率而设计。")
+        self.subtitleLabel = QLabel("A cutting-edge AI coding assistant designed to improve the efficiency of text coding.")
         self.subtitleLabel.setObjectName('subtitleLabel')
 
         self.titleLayout = QVBoxLayout()
@@ -43,11 +43,11 @@ class AutoCodingWindow:
         self.titleLayout.addSpacing(4)
         self.titleLayout.addWidget(self.subtitleLabel)
 
-        self.newVersionButton = PrimaryPushButton("有新版本", self, FluentIcon.LINK)
+        self.newVersionButton = PrimaryPushButton("New version", self, FluentIcon.LINK)
         self.newVersionButton.setVisible(False)
 
         self.aboutButton = ToolButton(FluentIcon.INFO, self)
-        self.settingButton = PushButton("设置", self, FluentIcon.SETTING)
+        self.settingButton = PushButton("Setting", self, FluentIcon.SETTING)
 
         self.headerLayout = QHBoxLayout()
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
@@ -70,13 +70,13 @@ class AutoCodingWindow:
         self.separator2.setFixedSize(1, 210)
 
         # 点击按钮选择topic csv文件区域
-        self.topicLabel = QLabel("Topic文件：")
+        self.topicLabel = QLabel("Topic File:")
         self.topicLabel.setObjectName("topicLabel")
         self.topicInfo = LineEdit(this_window)
         self.topicInfo.setObjectName("topicInfo")
         self.topicInfo.setReadOnly(True)
 
-        self.topicButton = PushButton("选择文件", this_window)
+        self.topicButton = PushButton("Open", this_window)
         self.topicButton.setObjectName("topicButton")
         self.topicButton.setFixedWidth(120)
         self.topicButton.setContentsMargins(8, 0, 0, 0)
@@ -84,13 +84,13 @@ class AutoCodingWindow:
         self.topicButton.clicked.connect(self.selectTopicFile)
 
         # 点击按钮选择reply csv文件区域
-        self.replyLabel = QLabel("Reply文件：")
+        self.replyLabel = QLabel("Reply File:")
         self.replyLabel.setObjectName("replyLabel")
         self.replyInfo = LineEdit(this_window)
         self.replyInfo.setObjectName("replyInfo")
         self.replyInfo.setReadOnly(True)
 
-        self.replyButton = PushButton("选择文件", this_window)
+        self.replyButton = PushButton("Open", this_window)
         self.replyButton.setObjectName("replyButton")
         self.replyButton.setFixedWidth(120)
         self.replyButton.setContentsMargins(8, 0, 0, 0)
@@ -98,13 +98,13 @@ class AutoCodingWindow:
         self.replyButton.clicked.connect(self.selectReplyFile)
 
         # 点击按钮选择coding schema文件区域
-        self.schemaLabel = QLabel("Schema文件：")
+        self.schemaLabel = QLabel("Schema File:")
         self.schemaLabel.setObjectName("schemaLabel")
         self.schemaInfo = LineEdit(this_window)
         self.schemaInfo.setObjectName("schemaInfo")
         self.schemaInfo.setReadOnly(True)
 
-        self.schemaButton = PushButton("选择文件", this_window)
+        self.schemaButton = PushButton("Open", this_window)
         self.schemaButton.setObjectName("schemaButton")
         self.schemaButton.setFixedWidth(120)
         self.schemaButton.setContentsMargins(8, 0, 0, 0)
@@ -112,7 +112,7 @@ class AutoCodingWindow:
         self.schemaButton.clicked.connect(self.selectSchemaFile)
 
         # 日志区域
-        self.logLabel = QLabel("日志: ")
+        self.logLabel = QLabel("Log:")
         self.logLabel.setObjectName("logLabel")
         self.logFrame = QFrame()
         self.logFrame.setObjectName("logFrame")
@@ -120,7 +120,7 @@ class AutoCodingWindow:
         self.logFrame.setFrameShadow(QFrame.Raised)
         self.logFrameLayout = QVBoxLayout(self.logFrame)
         self.logFrameLayout.setContentsMargins(0, 0, 0, 0)
-        self.logContent = QTextEdit("欢迎使用 AI Coding Officer Pro！")
+        self.logContent = QTextEdit("Welcome to AI Coding Officer Pro!")
         self.logContent.setObjectName("logContent")
         self.logContent.setFontFamily("Courier")
         self.logContent.setFontPointSize(14) 
@@ -154,19 +154,19 @@ class AutoCodingWindow:
         self.buttonSeparator.setObjectName("buttonSeparator")
         self.buttonSeparator.setFixedSize(1, 30)
 
-        self.exportCodingResultButton = PushButton("导出编码", self)
+        self.exportCodingResultButton = PushButton("Export Data", self)
         self.exportCodingResultButton.setFixedWidth(120)
         # self.exprotButton.setEnabled(False)
-        self.stopCodingButton = PushButton("停止编码", self)
+        self.stopCodingButton = PushButton("Stop Coding", self)
         self.stopCodingButton.setFixedWidth(120)
         self.stopCodingButton.setEnabled(False)
-        self.testCodingButton = PushButton("测试编码", self)
+        self.testCodingButton = PushButton("Test Coding", self)
         self.testCodingButton.setFixedWidth(120)
         # self.testCodingButton.setEnabled(False)
-        self.standardCodingButton = PushButton("开始批量编码", self)
+        self.standardCodingButton = PushButton("Batch Coding", self)
         self.standardCodingButton.setFixedWidth(120)
         # self.standardCodingButton.setEnabled(False)
-        self.loadDataButton = PushButton("加载数据", self)
+        self.loadDataButton = PushButton("Load Data", self)
         self.loadDataButton.setFixedWidth(120)
 
         self.buttonLayout = QHBoxLayout()
@@ -227,7 +227,7 @@ class AutoCodingWindow:
         options = QFileDialog.Options()
         fileName, _ = QFileDialog.getOpenFileName(
             self.centralWidget,  # 使用 centralWidget 作为父组件
-            f"选择 {file_type} 文件", "",
+            f"Choose {file_type} file", "",
             file_filter,
             options=options
         )

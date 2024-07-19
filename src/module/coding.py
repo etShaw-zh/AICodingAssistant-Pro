@@ -8,6 +8,8 @@ from PySide6.QtCore import QObject, Signal, QThread
 from queue import Queue
 from src.module.config import localDBFilePath, readConfig
 
+language = readConfig().get("Language", "language")
+
 class AICodingWorkerThread(QThread):
     output_signal = Signal(str)
     running_signal = Signal(bool)
@@ -28,31 +30,55 @@ class AICodingWorkerThread(QThread):
         self._stop_event.clear() # 重置停止事件
         self.running_signal.emit(True)
         main_coding(self._stop_event, self.output_signal, self.thread_results, self.THREAD_COUNT, self.DATABASE_PATH, self.TABLE_NAME, self.LABEL_COLUMN_NAME, self.LIMIT, self.DEFAULT_NODE_RECOGNITION_PROMPT)
-
-        # self.output_signal.emit('[Notice] [' + arrow.now().format("YYYY-MM-DD HH:mm:ss") + ']  [编码任务结束]')
         self.running_signal.emit(False)
 
     def stop(self):
         self._stop_event.set()
-        self.running_signal.emit(False)
         self.wait()
 
     def __del__(self):
         self.stop()
 
 def send_request(url, headers, data):
+    error_type_description = {
+        "content_filter": "内容审查拒绝，您的输入或生成内容可能包含不安全或敏感内容，请您避免输入易产生敏感内容的提示语，谢谢",
+        "invalid_request_error": "请求无效，通常是您请求格式错误或者缺少必要参数，请检查后重试",
+        "invalid_authentication_error": "鉴权失败，请检查 apikey 是否正确，请修改后重试",
+        "exceeded_current_quota_error": "账户异常，请检查您的账户余额",
+        "permission_denied_error": "访问其他用户信息的行为不被允许，请检查",
+        "resource_not_found_error": "不存在此模型或者没有授权访问此模型，请检查后重试",
+        "engine_overloaded_error": "当前并发请求过多，节点限流中，请稍后重试；建议充值升级 tier，享受更丝滑的体验",
+        "exceeded_current_quota_error": "账户额度不足，请检查账户余额，保证账户余额可匹配您 tokens 的消耗费用后重试",
+        "rate_limit_reached_error": "请求触发了账户并发个数的限制，请等待指定时间后重试",
+        "server_error": "解析文件失败，请重试",
+        "unexpected_output": "内部错误，请联系管理员",
+    }
+
     try:
         response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()  # 将触发异常的HTTP错误
         return response.json()
     except requests.exceptions.HTTPError as e:
         error_code = e.response.status_code
-        error_message = e.response.json().get("error", {}).get("message", "未知错误")
-        return {"error": f"HTTP {error_code}", "message": error_message}
+        if language == "Chinese":
+            error_type = e.response.json().get("error", {}).get("type", "未知错误")
+            error_message = e.response.json().get("error", {}).get("message", "未知错误")
+            response_message = {"error": f"HTTP {error_code}", "message": error_message, "description": error_type_description.get(error_type, "未知错误")}
+        else:
+            error_type = e.response.json().get("error", {}).get("type", "unknown error")
+            error_message = e.response.json().get("error", {}).get("message", "unknown error")
+            response_message = {"error": f"HTTP {error_code}", "message": error_message, "description": error_type_description.get(error_type, "unknown error")}
+        return response_message
     except requests.exceptions.RequestException as e:
-        return {"error": "网络错误", "message": str(e)}
+        if language == "Chinese":
+            return {"error": "网络错误", "message": str(e)}
+        else:
+            return {"error": "Network error", "message": str(e)}
     except Exception as e:
-        return {"error": "未知错误", "message": str(e)}
+        if language == "Chinese":
+            return {"error": "未知错误", "message": str(e)}
+        else:
+            return {"error": "unknown error", "message": str(e)}
 
 def get_code_from_gpt(output_signal, prompt_content):
     MOONSHOT_API_KEY = readConfig().get("APIkey", "api_key")
@@ -88,26 +114,29 @@ def get_code_from_gpt(output_signal, prompt_content):
 
     response = send_request(url, headers, data)
     if 'error' in response:
-        output_signal.emit("[Notice] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [GPT返回]：" + str(response))
-        time.sleep(10)
+        if language == "Chinese":
+            output_signal.emit("[提示] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [GPT 返回]：" + str(response))
+        else:
+            output_signal.emit("[Notice] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [GPT returned]：" + str(response))
+        time.sleep(1)
         return None
     return response
 
-def parse_gpt_response(output_signal, response):
+def parse_gpt_response(response):
     try:
         res = response['choices'][0]['message']['content'].replace('```json', '').replace('```', '').replace(' ', '').replace('\n', '')
         return str(res)
     except Exception as e:
-        print(e)
+        print('parse_gpt_response ', e)
         return 'None'
 
 def encode_data(output_signal, record, default_node_recognition_prompt, label):
     prompt_content = default_node_recognition_prompt + record['prompt_content']
-    res = get_code_from_gpt(output_signal, prompt_content)
+    response = get_code_from_gpt(output_signal, prompt_content)
     return {
         'index': record['index'],
-        label: parse_gpt_response(output_signal, res),
-        'orign_response': str(res)
+        label: 'None' if response == None else parse_gpt_response(response),
+        'orign_response': str(response)
     }
 
 def worker(stop_event, output_signal, input_queue, output_dict, db_path, table_name, label, default_node_recognition_prompt):
@@ -118,7 +147,10 @@ def worker(stop_event, output_signal, input_queue, output_dict, db_path, table_n
         if stop_event.is_set():
             break
         record = input_queue.get()
-        output_signal.emit("[Notice] [{}] [当前线程]: {}，当前还有{}条数据未处理".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), threading.current_thread().name, input_queue.qsize()))
+        if language == "Chinese":
+            output_signal.emit("[提示] [{}] [当前线程]：{}，剩余 {} 项待处理".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), threading.current_thread().name, input_queue.qsize()))
+        else:
+            output_signal.emit("[Notice] [{}] [Current thread]: {}，remaining {} items to process".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), threading.current_thread().name, input_queue.qsize()))
         try:
             encoded_record = encode_data(output_signal, record, default_node_recognition_prompt, label)
             if encoded_record[label] != 'None':
@@ -127,7 +159,10 @@ def worker(stop_event, output_signal, input_queue, output_dict, db_path, table_n
                 conn.commit()
                 output_dict[encoded_record['index']] = encoded_record
             else:
-                output_signal.emit("[Notice] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [编码失败]: 无法从GPT获取代码")
+                if language == "Chinese":
+                    output_signal.emit("[提示] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [编码失败]：无法从 GPT 获取编码")
+                else:
+                    output_signal.emit("[Notice] [" + arrow.now().format('YYYY-MM-DD HH:mm:ss') + "] [Encoding failed]: Unable to get code from GPT")
         except sqlite3.Error as e:
             print("An error occurred:", e.args[0])
     conn.close()
@@ -163,4 +198,7 @@ def main_coding(stop_event, output_signal, thread_results, THREAD_COUNT, DATABAS
     for t in threads:
         t.join()
 
-    output_signal.emit("[Notice] [{}] [编码统计]：总共还有{}条数据未处理".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), len(fetch_data_from_database(DATABASE_PATH, TABLE_NAME, LABEL_COLUMN_NAME))))
+    if language == "Chinese":
+        output_signal.emit("[提示] [{}] [编码统计]：剩余 {} 项待处理".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), len(fetch_data_from_database(DATABASE_PATH, TABLE_NAME, LABEL_COLUMN_NAME))))
+    else:
+        output_signal.emit("[Notice] [{}] [Coding statistics]：Total {} items remaining to be processed".format(arrow.now().format('YYYY-MM-DD HH:mm:ss'), len(fetch_data_from_database(DATABASE_PATH, TABLE_NAME, LABEL_COLUMN_NAME))))

@@ -14,15 +14,15 @@ class SettingWindow(object):
             style_sheet = file.read()
         this_window.setStyleSheet(style_sheet)
 
-        this_window.setWindowTitle("设置")
+        this_window.setWindowTitle("Settings")
         this_window.setWindowIcon(QIcon(getResource("src/image/AICO-logo.png")))
         this_window.resize(850, -1)
         this_window.setFixedSize(self.size())  # 禁止拉伸窗口
 
         # 选择语言
-        self.languageTitle = QLabel("语言")
+        self.languageTitle = QLabel("Language")
 
-        self.languageInfo = QLabel("选择你的首选语言，重启后生效。")
+        self.languageInfo = QLabel("Select the language of the interface, restart the application to take effect.")
         self.languageInfo.setObjectName("cardInfoLabel")
 
         self.language = EditableComboBox(this_window)
@@ -35,13 +35,13 @@ class SettingWindow(object):
 
         # 选择模型
 
-        self.modelTypeTitle = QLabel("GPT 模型")
+        self.modelTypeTitle = QLabel("GPT model")
 
-        self.modelTypeInfo = QLabel("指定编码的GPT模型，不同模型有不同的编码效果。")
+        self.modelTypeInfo = QLabel("Select the GPT model to use, different models have different performance.")
         self.modelTypeInfo.setObjectName("cardInfoLabel")
 
         self.modelTypeUrl = QLabel("<a href='https://platform.moonshot.cn/'"
-                                  "style='font-size:12px;color:#2E75B6;'>查看在线文档</a>")
+                                  "style='font-size:12px;color:#2E75B6;'>To read document.</a>")
         self.modelTypeUrl.setOpenExternalLinks(True)
 
         self.modelInfoLayout = QHBoxLayout()
@@ -63,23 +63,23 @@ class SettingWindow(object):
         self.modelTypeCard = self.settingCard(self.modelTypeTitle, self.dateInfoFrame, self.modelType, "full")
 
         # 选择线程数
-        self.threadTitle = QLabel("线程数")
+        self.threadTitle = QLabel("Thread count")
 
-        self.threadInfo = QLabel("指定编码时的线程数，建议根据电脑性能选择。")
+        self.threadInfo = QLabel("Select the number of threads to use, the default is 1.")
         self.threadInfo.setObjectName("cardInfoLabel")
 
         self.threadCount = EditableComboBox(this_window)
         self.threadCount.setMinimumWidth(200)
         self.threadCount.setMaximumWidth(200)
         self.threadCount.addItems(["1", "2", "4", "8"])
-        self.threadCount.setText("4")
+        self.threadCount.setText("1")
 
         self.threadCard = self.settingCard(self.threadTitle, self.threadInfo, self.threadCount, "full")
 
         # 设置模型API key 
         
         self.modelApiTitle = QLabel("GPT API Key")
-        self.modelApiInfo = QLabel("输入你的Kimi API Key，用于调用GPT模型。")
+        self.modelApiInfo = QLabel("Please enter the API key of the Kimi open platform.")
 
         self.modelApiKey = LineEdit(self)
         self.modelApiKey.setFixedWidth(200)
@@ -89,10 +89,10 @@ class SettingWindow(object):
 
         # 本地数据库文件夹
 
-        self.localDBTitle = QLabel("本地数据库")
+        self.localDBTitle = QLabel("Local database")
         self.localDBInfo = QLabel(localDBFilePath())
 
-        self.localDBButton = PushButton("打开", self, FluentIcon.FOLDER)
+        self.localDBButton = PushButton("Open", self, FluentIcon.FOLDER)
         self.localDBButton.setFixedWidth(100)
 
         self.localDBCard = self.settingCard(
@@ -100,10 +100,10 @@ class SettingWindow(object):
 
         # 日志
 
-        self.logFolderTitle = QLabel("日志文件夹")
+        self.logFolderTitle = QLabel("Log folder")
         self.logFolderInfo = QLabel(logFolder())
 
-        self.logFolderButton = PushButton("打开", self, FluentIcon.FOLDER)
+        self.logFolderButton = PushButton("Open", self, FluentIcon.FOLDER)
         self.logFolderButton.setFixedWidth(100)
 
         self.logFolderCard = self.settingCard(
@@ -111,9 +111,9 @@ class SettingWindow(object):
 
         # 按钮
 
-        self.applyButton = PrimaryPushButton("保存", self)
+        self.applyButton = PrimaryPushButton("Save", self)
         self.applyButton.setFixedWidth(120)
-        self.cancelButton = PushButton("取消", self)
+        self.cancelButton = PushButton("Cancel", self)
         self.cancelButton.setFixedWidth(120)
 
         self.buttonLayout = QHBoxLayout()

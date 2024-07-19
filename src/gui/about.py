@@ -16,7 +16,7 @@ class AboutWindow(object):
             style_sheet = file.read()
         this_window.setStyleSheet(style_sheet)
 
-        this_window.setWindowTitle("关于")
+        this_window.setWindowTitle("About")
         this_window.setWindowIcon(QIcon(getResource("src/image/AICO-logo.png")))
         this_window.resize(550, -1)
         this_window.setFixedSize(self.size())  # 禁止拉伸窗口
@@ -51,11 +51,11 @@ class AboutWindow(object):
         # self.visitTimes = QLabel("0")
         # self.visitTimesCard = self.usageCard(self.visitTimesTitle, self.visitTimes)
 
-        self.downloadTimesTitle = QLabel("下载次数")
+        self.downloadTimesTitle = QLabel("Download Count")
         self.downloadTimes = QLabel("0")
         self.downloadTimesCard = self.usageCard(self.downloadTimesTitle, self.downloadTimes)
 
-        self.starCountTitle = QLabel("Star 数")
+        self.starCountTitle = QLabel("Star Count")
         self.starCount = QLabel("0")
         self.starCountCard = self.usageCard(self.starCountTitle, self.starCount)
 

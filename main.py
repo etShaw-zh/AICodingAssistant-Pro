@@ -12,23 +12,23 @@ from src.module.config import readConfig
 
 if __name__ == "__main__":
     log("=============================")
-    log("AICodingOfficer启动")
-    log(f"当前版本：{currentVersion()}")
+    log("AICodingOfficer lunched")
+    log(f"Current version: {currentVersion()}")
 
     app = QApplication(sys.argv)
 
-    # # 默认加载系统语言
-    # configLanguage = readConfig().get("Language", "language")
-    # if configLanguage == "Chinese":
-    #     systemLanguage = "zh_CN"
-    # else:
-    #     systemLanguage = "en_US"
-    # # systemLanguage = QLocale.system().name()
-    # loadLanguage(app, systemLanguage)
+    # 默认加载系统语言
+    configLanguage = readConfig().get("Language", "language")
+    if configLanguage == "Chinese":
+        systemLanguage = "zh_CN"
+    else:
+        systemLanguage = "en_US"
+    # systemLanguage = QLocale.system().name()
+    loadLanguage(app, systemLanguage)
 
-    # translator = FluentTranslator()
-    # app.installTranslator(translator)
-    
+    translator = FluentTranslator()
+    app.installTranslator(translator)
+
     # window = MyMainWindow()
     window = Window()
     window.show()

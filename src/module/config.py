@@ -76,7 +76,7 @@ def initConfig(config_file):
     config.set("AICO", "model", "moonshot-v1-8k")
 
     config.add_section("Thread")
-    config.set("Thread", "thread_count", "4")
+    config.set("Thread", "thread_count", "1")
 
     config.add_section("Counter")
     config.set("Counter", "open_times", "0")
