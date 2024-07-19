@@ -27,6 +27,8 @@
       <img  width="80%" align="center" src="./_static/images/screenshot_2.png" alt="界面">
    </p>
 
+.. warning::
+    AI Coding Assistant Pro 编码的结果受到GPT模型性能的影响，请慎重使用编码结果，否则后果自负。
 
 .. raw:: html
 
@@ -35,13 +37,15 @@
 本文档是 `AI Coding Officer <https://github.com/etShaw-zh/AICodingAssistant-Pro>`_ 项目的说明及帮助文档，包含用户指南和开发者指南两部分。
 
 .. toctree::
-      :maxdepth: 2
-      :caption: 用户指南
-   
-      user-guild/quick-start
+   :maxdepth: 2
+   :caption: 用户指南
+
+   user-guild/quick-start
+   user-guild/faq
 
 .. toctree::
-      :maxdepth: 2
-      :caption: 开发者指南
+   :maxdepth: 2
+   :caption: 开发者指南
 
-      developer-guild/about
+   developer-guild/quick-start
+   developer-guild/about

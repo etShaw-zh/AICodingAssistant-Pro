@@ -2,112 +2,115 @@
     <img src="image/AICO-logo.png" width=55%/ alt="">
     <br>
     <div align="center">
-        <img src="https://img.shields.io/github/license/etShaw-zh/AICodingAssistant-Pro?color=2E75B6" alt="License">
-        <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-2E75B6" alt="Platform">
-        <img src="https://img.shields.io/github/v/release/etShaw-zh/AICodingAssistant-Pro?color=2E75B6" alt="Release">
-        <img src="https://img.shields.io/github/downloads/etShaw-zh/AICodingAssistant-Pro/total?color=2E75B6" alt="Downloads">
+        <img src="https://img.shields.io/github/license/etShaw-zh/AICodingAssistant-Pro?color=2E75B6"  alt="License">
+        <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-2E75B6"  alt="Platform">
+        <img src="https://img.shields.io/github/v/release/etShaw-zh/AICodingAssistant-Pro?color=2E75B6"  alt="Release">
+        <img src="https://img.shields.io/github/downloads/etShaw-zh/AICodingAssistant-Pro/total?color=2E75B6"  alt="Downloads">
     </div>
 </p>
 
-
-## 介绍
-AICO 是一款前沿的人工智能编码助手，专为提升文本编码的效率而设计。
-
-仅需拖动数据文件至软件界面，即可自动对数据进行编码，无需人工干预。
-
 <p align="center">
-    <img src="image/screenshot.jpg" alt="SubtitleRenamer" width="80%">
+    English | <a href="docs/README_zh.md">简体中文</a>
 </p>
 
-## 名称解释
+## Introduction
+AICO is a cutting-edge artificial intelligence coding assistant, designed to enhance the efficiency of text encoding.
 
-- AI: 代表 "Artificial Intelligence"，强调工具的智能特性。
-- CO: 代表 "Coding Officer"，意味着 AICO 是一个专业的编码助手，能够执行和监督编码任务。
+Simply drag and drop data files onto the software interface to automatically encode the data without human intervention.
 
-## 核心价值
+<p align="center">
+    <img src="image/screenshot_2.png" alt="SubtitleRenamer" width="80%">
+</p>
 
-- 智能: AICO 利用Large Language Models (LLMs)技术提供智能编码解决方案。
-- 效率: 通过自动化和优化编码流程，AICO 提高了科研工作速度。
-- 可靠: AICO 的算法确保了编码的准确性和可靠性。
+## Name Explanation
 
-## 目标用户
+- AI: Stands for "Artificial Intelligence", emphasizing the intelligent features of the tool.
+- CO: Stands for "Coding Officer", indicating that AICO is a professional coding assistant capable of executing and supervising coding tasks.
 
-- 科研人员
-- 数据科学家
-- 教育工作者
-- 任何需要高效文本编码支持的专业人士
+## Core Values
 
-## 功能特点
+- Intelligence: AICO utilizes Large Language Models (LLMs) technology to provide intelligent coding solutions.
+- Efficiency: By automating and optimizing the coding process, AICO increases the speed of scientific research work.
+- Reliability: AICO's algorithms ensure the accuracy and reliability of the encoding.
 
-- 多语言支持
-- 定制编码规则
-- 用户友好的交互界面
+## Target Users
 
-## 安装
+- Researchers
+- Data Scientists
+- Educators
+- Any professionals in need of efficient text encoding support
+
+## Features
+
+- Multi-language support
+- Customizable encoding rules
+- User-friendly interface
+
+## Installation
 
 ### Windows
 
-1. 下载安装包：[AICodingOfficer_windows.zip](https://github.com/etShaw-zh/AICodingAssistant-Pro/releases)
-2. 解压安装包
-3. 运行 `AICodingOfficer.exe`
+1. Download the installation package: [AICodingOfficer_windows.zip](https://github.com/etShaw-zh/AICodingAssistant-Pro/releases)
+2. Unzip the installation package
+3. Run `AICodingOfficer.exe`
 
 ### macOS
 
-1. 下载安装包：[AICodingOfficer_macOS.zip](https://github.com/etShaw-zh/AICodingAssistant-Pro/releases)
-2. 解压安装包
-3. 运行 `AICodingOfficer.app`
+1. Download the installation package: [AICodingOfficer_macOS.zip](https://github.com/etShaw-zh/AICodingAssistant-Pro/releases)
+2. Unzip the installation package
+3. Run `AICodingOfficer.app`
 
-    ⚠️  解决Mac 上「应用程序 “xxx” 不能打开」的问题
+    ⚠️  Solving the issue of "Application 'xxx' cannot be opened" on Mac
 
-    - 首先在应用上点击右键，选择「显示包内容」
-    - 之后依次展开「Contents」-「MacOS」，找到对应文件夹下的文件 AICodingOfficer
-    - 接下来打开终端，直接输入以下代码（注意 +x 前后都有空格）：
+    - First, right-click on the application and select 'Show Package Contents'
+    - Then, expand 'Contents' - 'MacOS', find the corresponding file AICodingOfficer
+    - Next, open the terminal and enter the following code (note that there are spaces before and after +x):
         
         ```shell
         chmod +x
         ```
         
-    - 之后再将文件 AICodingOfficer 拖入终端（为了输入完整的执行路径）。完整的命令如下：
+    - Then drag the file AICodingOfficer into the terminal (to input the complete execution path). The complete command is as follows:
         
         ```shell
         chmod +x /Users/xiaojianjun/Downloads/AICodingOfficer.app/Contents/MacOS/AICodingOfficer
         ```
 
-    - 最后点击回车，这时候在访达中原本不明类型的文件现在变成了 Unix 可执行文件，图标也变成正常的了。
-    - 重新打开下载的软件，你会发现下载的程序可以正常使用并执行了！
-    - 仍然无法打开的话，进入设置，安全性与隐私，找到提示信息，点击运行打开即可。
+    - Finally, press Enter. At this point, the file that was originally of unknown type in Finder has now become a Unix executable file, and the icon has also become normal.
+    - Reopen the downloaded software, and you will find that the downloaded program can be used and executed normally!
+    - If it still cannot be opened, go to Settings, Security & Privacy, find the prompt information, and click to run and open it.
 
-    📖  图文教程：[macOS 上「应用程序 “xxx” 不能打开」的解决方法](https://sspai.com/post/52828#!)
+    📖  Tutorial: [How to solve the issue of "Application 'xxx' cannot be opened" on macOS](https://sspai.com/post/52828#!) 
 
-## 示例
+## Examples
 
-## 使用指南
+## User Guide
 
-#### 自动编码
+⚠️User guide detail：[AICO user guide](https://aicodingassistant-pro.readthedocs.io/en/latest/index.html)
+
+#### Automatic Encoding
 
 <p align="center">
-    <img src="image/01.gif" width=88% alt="Auto rename">
 </p>
 
 
 
-#### 手动编码
+#### Manual Encoding
 
 <p align="center">
-    <img src="image/02.gif" width=88% alt="Manual rename">
 </p>
 
-## 联系方式
+## Contact Information
 
-- **微信：** etshaw8888
+- **WeChat:** etshaw8888
 
-- **个人主页：** https://xiaojianjun.cn
+- **Personal Homepage:** https://xiaojianjun.cn 
 
-- **微信公众号：** EdTech肖建军
+- **WeChat Official Account:** EdTech肖建军
 
-- **邮箱：** et_shaw@126.com
+- **Email:** et_shaw@126.com
 
-- **地址：** 北京师范大学科技楼C区1005A室
+- **Address:** Room 1005A, Block C, Science and Technology Building, Beijing Normal University
 
 <p align="center">
     <img src="image/shaw.png" width=88% alt="Manual rename">

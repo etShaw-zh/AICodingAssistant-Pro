@@ -5,10 +5,10 @@ AI Coding Assistant Pro 是一款前沿的人工智能编码助手，专为提�
 由于作者能力有限，软件难免有些缺陷，大家在使用过程中有遇到任何问题欢迎提 issue，如果喜欢本项目的话也可以点个 ⭐ 以示支持。
 
 .. warning::
-    AI Coding Assistant Pro 编码的结果收到GPT模型性能的影响，请慎重使用编码结果，否则后果自负。
+    AI Coding Assistant Pro 编码的结果受到GPT模型性能的影响，请慎重使用编码结果，否则后果自负。
 
 
-感谢以下项目或服务对本项目的支持：
+感谢以下项目或服务
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - `Kimi Open platform <https://platform.moonshot.cn/>`_: 为本项目提供了强大的AI编码服务
