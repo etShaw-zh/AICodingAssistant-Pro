@@ -6,6 +6,7 @@
         <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-2E75B6"  alt="Platform">
         <img src="https://img.shields.io/github/v/release/etShaw-zh/AICodingAssistant-Pro?color=2E75B6"  alt="Release">
         <img src="https://img.shields.io/github/downloads/etShaw-zh/AICodingAssistant-Pro/total?color=2E75B6"  alt="Downloads">
+        <img src='https://readthedocs.org/projects/aicodingassistant-pro/badge/?version=latest' alt='Docs' />
     </div>
 </p>
 
