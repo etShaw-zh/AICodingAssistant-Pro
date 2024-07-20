@@ -82,23 +82,9 @@ Simply drag and drop data files onto the software interface to automatically enc
 
     📖  Tutorial: [How to solve the issue of "Application 'xxx' cannot be opened" on macOS](https://sspai.com/post/52828#!) 
 
-## Examples
-
 ## User Guide
 
 ⚠️User guide detail：[AICO user guide](https://aicodingassistant-pro.readthedocs.io/en/latest/index.html)
-
-#### Automatic Encoding
-
-<p align="center">
-</p>
-
-
-
-#### Manual Encoding
-
-<p align="center">
-</p>
 
 ## Contact Information
 

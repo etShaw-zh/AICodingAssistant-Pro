@@ -27,9 +27,6 @@
       <img  width="80%" align="center" src="./_static/images/screenshot_2.png" alt="界面">
    </p>
 
-.. warning::
-    AI Coding Assistant Pro 编码的结果受到GPT模型性能的影响，请慎重使用编码结果，否则后果自负。
-
 .. raw:: html
 
 欢迎来到 AI Coding Officer 文档

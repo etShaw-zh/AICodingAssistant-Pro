@@ -82,23 +82,9 @@ AICO 是一款前沿的人工智能编码助手，专为提升文本编码的效
 
     📖  图文教程：[macOS 上「应用程序 “xxx” 不能打开」的解决方法](https://sspai.com/post/52828#!)
 
-## 示例
-
 ## 使用指南
 
 ⚠️详细教程请参考：[AICO使用指南](https://aicodingassistant-pro.readthedocs.io/en/latest/index.html)
-
-#### 自动编码
-
-<p align="center">
-</p>
-
-
-
-#### 手动编码
-
-<p align="center">
-</p>
 
 ## 联系方式
 
