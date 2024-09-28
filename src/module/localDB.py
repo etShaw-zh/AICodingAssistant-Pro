@@ -11,11 +11,12 @@ class localDB():
     def checkDB(self):
         try:
             self.conn.execute("select * from prompt")
+            self.conn.commit()
         except:
             self.conn.execute("""
             CREATE TABLE 'prompt' (
                 'index' INTEGER,
-                'prompt_content' TEXT
+                'prompt_content' TEXT,
                 'prompt_code' TEXT,
                 'prompt_code_orign' TEXT
             )
@@ -38,5 +39,5 @@ class localDB():
         if has_coding:
             data = pd.read_sql('select * from prompt where prompt_code != "None"', self.conn)
         else:
-            data = pd.read_sql('select * from prompt where prompt_code == "None"', self.conn)
+            data = pd.read_sql('select * from prompt where prompt_code = "None"', self.conn)
         return data

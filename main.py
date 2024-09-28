@@ -9,6 +9,7 @@ from src.core import MyMainWindow, Window
 from src.function import log, loadLanguage
 from src.module.version import currentVersion
 from src.module.config import readConfig
+from src.module.localDB import localDB
 
 if __name__ == "__main__":
     log("=============================")
@@ -16,6 +17,9 @@ if __name__ == "__main__":
     log(f"Current version: {currentVersion()}")
 
     app = QApplication(sys.argv)
+
+    db = localDB()
+    db.checkDB()
 
     # 默认加载系统语言
     configLanguage = readConfig().get("Language", "language")

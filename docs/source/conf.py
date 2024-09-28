@@ -12,7 +12,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 project = 'AI Coding Officer'
 copyright = '2024, Jianjun Xiao'
 author = 'Jianjun Xiao'
-release = 'v1.0.1'
+release = 'v1.0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
