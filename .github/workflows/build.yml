@@ -79,7 +79,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE }}
         with:
-          tag_name: v1.0.2
+          tag_name: v1.0.3
           draft: true
           files: |
             AICodingOfficer_windows.zip
@@ -87,8 +87,5 @@ jobs:
             AICodingOfficer_linux.zip
           name: 🎉AICO
           body: |
-            ## 新增
-            - 新增内容
-            
-            ## 优化
-            - 优化内容
+            ## Bug Fixes
+            - Fix a bug #1
