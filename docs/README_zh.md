@@ -6,6 +6,7 @@
         <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-2E75B6" alt="Platform">
         <img src="https://img.shields.io/github/v/release/etShaw-zh/AICodingAssistant-Pro?color=2E75B6" alt="Release">
         <img src="https://img.shields.io/github/downloads/etShaw-zh/AICodingAssistant-Pro/total?logo=github&color=2E75B6" alt='download' />
+        <img src="https://img.shields.io/github/downloads/etShaw-zh/AICodingAssistant-Pro/latest/total?color=2E75B6" alt='latest' />
         <img src='https://readthedocs.org/projects/aicodingassistant-pro/badge/?version=latest' alt='Docs' />
         <a href="https://doi.org/10.5281/zenodo.14227644"><img src="https://zenodo.org/badge/822459670.svg" alt="DOI"></a>
     </div>
@@ -89,18 +90,18 @@ AICO 是一款前沿的人工智能编码助手，专为提升文本编码的效
 ⚠️详细教程请参考：[AICO使用指南](https://aicodingassistant-pro.readthedocs.io/en/latest/index.html)
 
 ## 引用信息
-Xiao, J. (2024). etShaw-zh/AICodingAssistant-Pro: A cutting-edge artificial intelligence text classification assistant (v1.0.4) [Software]. Zenodo. https://doi.org/10.5281/zenodo.14227645
+Xiao, J. (2024). AICO: A cutting-edge artificial intelligence text coding officer (v1.0.4) [Software]. Zenodo. https://doi.org/10.5281/zenodo.14227645
     
 ```bibtex
 @software{jianjun_xiao_2024_14227645,
-author       = {Jianjun Xiao},
-title        = {{etShaw-zh/AICodingAssistant-Pro: a cutting-edge artificial intelligence text classification assistant}},
-month        = nov,
-year         = 2024,
-publisher    = {Zenodo},
-version      = {v1.0.4},
-doi          = {10.5281/zenodo.14227645},
-url          = {https://doi.org/10.5281/zenodo.14227645}
+  author       = {Jianjun Xiao},
+  title        = {{AICO: A cutting-edge artificial intelligence text coding officer}},
+  month        = nov,
+  year         = 2024,
+  publisher    = {Zenodo},
+  version      = {v1.0.4},
+  doi          = {10.5281/zenodo.14227645},
+  url          = {https://doi.org/10.5281/zenodo.14227645}
 }
 ```
 
