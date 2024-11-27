@@ -17,7 +17,7 @@
 </p>
 
 ## Introduction
-AICO is a cutting-edge artificial intelligence coding officer, designed to enhance the efficiency of text encoding.
+AICO is an artificial intelligence text-coding officer with integrated classifiers, designed to enhance the efficiency of text encoding.
 
 Simply drag and drop data files onto the software interface to automatically encode the data without human intervention.
 
@@ -90,12 +90,12 @@ Simply drag and drop data files onto the software interface to automatically enc
 ⚠️User guide detail：[AICO user guide](https://aicodingassistant-pro.readthedocs.io/en/latest/index.html)
 
 ## Citation
-Xiao, J. (2024). AICO: A cutting-edge artificial intelligence text coding officer (v1.0.4) [Software]. Zenodo. https://doi.org/10.5281/zenodo.14227645
+Xiao, J. (2024). AICO: An artificial intelligence text-coding officer with integrated classifiers (v1.0.4) [Software]. Zenodo. https://doi.org/10.5281/zenodo.14227645
     
 ```bibtex
 @software{jianjun_xiao_2024_14227645,
   author       = {Jianjun Xiao},
-  title        = {{AICO: A cutting-edge artificial intelligence text coding officer}},
+  title        = {{AICO: An artificial intelligence text-coding officer with integrated classifiers}},
   month        = nov,
   year         = 2024,
   publisher    = {Zenodo},

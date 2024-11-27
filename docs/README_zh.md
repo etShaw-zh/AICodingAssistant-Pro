@@ -17,7 +17,7 @@
 </p>
 
 ## 介绍
-AICO 是一款前沿的人工智能编码助手，专为提升文本编码的效率而设计。
+AICO 是一款具有集成分类器的人工智能编码助手，专为提升文本编码的效率而设计。
 
 仅需拖动数据文件至软件界面，即可自动对数据进行编码，无需人工干预。
 
@@ -90,12 +90,12 @@ AICO 是一款前沿的人工智能编码助手，专为提升文本编码的效
 ⚠️详细教程请参考：[AICO使用指南](https://aicodingassistant-pro.readthedocs.io/en/latest/index.html)
 
 ## 引用信息
-Xiao, J. (2024). AICO: A cutting-edge artificial intelligence text coding officer (v1.0.4) [Software]. Zenodo. https://doi.org/10.5281/zenodo.14227645
+Xiao, J. (2024). AICO: An artificial intelligence text-coding officer with integrated classifiers (v1.0.4) [Software]. Zenodo. https://doi.org/10.5281/zenodo.14227645
     
 ```bibtex
 @software{jianjun_xiao_2024_14227645,
   author       = {Jianjun Xiao},
-  title        = {{AICO: A cutting-edge artificial intelligence text coding officer}},
+  title        = {{AICO: An artificial intelligence text-coding officer with integrated classifiers}},
   month        = nov,
   year         = 2024,
   publisher    = {Zenodo},
