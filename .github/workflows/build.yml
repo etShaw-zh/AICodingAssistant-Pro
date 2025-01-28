@@ -79,13 +79,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE }}
         with:
-          tag_name: v1.0.4
+          tag_name: ${{ github.ref_name }}
           draft: true
           files: |
             AICodingOfficer_windows.zip
             AICodingOfficer_mac_x86.zip
             AICodingOfficer_linux.zip
-          name: 🎉AICO
+          name: "AICO: A cutting-edge artificial intelligence text coding officer"
           body: |
             ## Bug Fixes
             - Fix a bug #1
