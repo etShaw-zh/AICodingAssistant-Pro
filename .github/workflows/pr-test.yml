@@ -1,0 +1,47 @@
+name: PR Test
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+
+jobs:
+  test:
+    name: Build Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        python-version: ["3.10"]
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Test
+        run: pyinstaller build.spec
+
+      - name: Verify build artifacts
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            test -f "dist/AICodingOfficer.exe" || exit 1
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            test -d "dist/AICodingOfficer.app" || exit 1
+          elif [ "${{ runner.os }}" = "Linux" ]; then
+            test -f "dist/AICodingOfficer" || exit 1
+          fi
