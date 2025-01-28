@@ -49,5 +49,5 @@ app = BUNDLE(
     name='AICodingOfficer.app',
     icon='image/icon.icns',
     bundle_identifier=None,
-    version='1.0.3'
+    version='1.0.4'
 )
