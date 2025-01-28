@@ -74,7 +74,7 @@ def initConfig(config_file):
     config.set("APIkey", "api_key", "")
 
     config.add_section("AICO")
-    config.set("AICO", "model", "moonshot-v1-8k")
+    config.set("AICO", "model", "")  # 默认为空，由用户选择
 
     config.add_section("Thread")
     config.set("Thread", "thread_count", "1")

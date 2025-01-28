@@ -114,8 +114,8 @@ class Window(FramelessWindow):
         self.myAutoCodingWindow = MyAutoCodingWindow()
         self.stackWidget.addWidget(self.myAutoCodingWindow)
 
-        self.myMainWindow = MyMainWindow()
-        self.stackWidget.addWidget(self.myMainWindow)
+        # self.myMainWindow = MyMainWindow()
+        # self.stackWidget.addWidget(self.myMainWindow)
 
         # initialize layout
         self.initLayout()
@@ -570,9 +570,14 @@ class MyAutoCodingWindow(QMainWindow, AutoCodingWindow):
 
         for topic_id in topic_reply_tree_dict:
             for reply_tree in topic_reply_tree_dict[topic_id]['reply_tree']:
-                prompt_content = r"""您将看到一组论坛中的话题和回帖，您的任务是优先根据下面的编码表中的含义解释对每个回帖提取一组标签“codes”（只有当编码表中没有合适的标签时才输出“NULL”），并以中文举例说明提取标签的理由，注意将理由翻译为中文列出。结果以JSON格式的数组输出：[{"reply_id":"1234","tags":[],"reason":[]},{"reply_id":"2345","tags":[],"reason":[]}]，注意只输出JSON，不要包括其他内容!tags和reason中的内容一一对应，请根据实际情况填写，不要直接复制粘贴。
-                编码表：\n
-                """
+                if self.language == 'Chinese':
+                    prompt_content = r"""您将看到一组论坛中的话题和回帖，您的任务是优先根据下面的编码表中的含义解释对每个回帖提取一组标签“codes”（只有当编码表中没有合适的标签时才输出“NULL”），并以中文举例说明提取标签的理由，注意将理由翻译为中文列出。结果以JSON格式的数组输出：[{"reply_id":"1234","tags":[],"reason":[]},{"reply_id":"2345","tags":[],"reason":[]}]，注意只输出JSON，不要包括其他内容!tags和reason中的内容一一对应，请根据实际情况填写，不要直接复制粘贴。
+                    编码表：\n
+                    """
+                elif self.language == 'English':
+                    prompt_content = r"""您将看到一组论坛中的话题和回帖，您的任务是优先根据下面的编码表中的含义解释对每个回帖提取一组标签“codes”（只有当编码表中没有合适的标签时才输出“NULL”），并以英文举例说明提取标签的理由，注意将理由翻译为英文列出。结果以JSON格式的数组输出：[{"reply_id":"1234","tags":[],"reason":[]},{"reply_id":"2345","tags":[],"reason":[]}]，注意只输出JSON，不要包括其他内容!tags和reason中的内容一一对应，请根据实际情况填写，不要直接复制粘贴。
+                    编码表：\n
+                    """
                 prompt_content += r"""
                 {encode_table_latex}
                 \n\n话题：\n
